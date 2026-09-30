@@ -37,16 +37,15 @@
  * ========================================================================== */
 
 /**
- * Ảnh chân dung cô dâu gốc KHÔNG có trong mirror HTTrack.
- * Bản gốc trỏ tới file JPEG ở CDN (bản .webjoptimized mới HTTrack chỉ bắt được
- * là bản dùng chung của đôi). Nên ta dùng `/assets/couple-2.jpg` (ảnh đôi cùng
- * bộ chụp) làm giá trị thay thế trong `couple.bride.portrait`.
+ *  Ảnh chân dung cô dâu gốc (`3e9e5b97...jpeg.jpg`) ĐÃ được tải về local.
+ *  Mirror HTTrack chỉ bắt được bản `.webjoptimized` dùng chung của đôi, nên bản
+ *  `.jpg` gốc phải tải tay từ CDN — nay nằm ở `web/public/assets/bride-aodai.jpg`
+ *  (1024 × 1536, ảnh chân dung cô dâu mặc áo dài hồng) và được rule
+ *  `#w-j5c07h6f .image-background` trong `global.css` trỏ thẳng tới.
+ *  `CouplePhotosSection.jsx` vẫn override `backgroundImage` inline bằng
+ *  `couple.bride.portrait` — ghi đè đúng lớp ảnh, giữ nguyên shorthand gốc.
  *
- * Nếu muốn dùng ĐÚNG ảnh chân dung cô dâu gốc:
- *   1. Tải file từ URL dưới đây (giữ nguyên đuôi .jpg).
- *   2. Lưu vào `web/public/assets/bride.jpg` (thư mục này được Vite copy thẳng
- *      sang `dist/`, nên URL sẽ là `/assets/bride.jpg`).
- *   3. Đổi giá trị `couple.bride.portrait` thành '/assets/bride.jpg'.
+ *  URL gốc vẫn được lưu ở `BRIDE_PORTRAIT_ORIGINAL_URL` bên dưới để đối chiếu.
  */
 export const BRIDE_PORTRAIT_ORIGINAL_URL =
   'https://content.pancake.vn/web-media-263/42/81/30/9b/3e9e5b97412c70a791a996c6cc1071826fdae0d91830e04e32c65c7f-w:1024-h:1536-l:163667-t:image/jpeg.jpg'
@@ -89,8 +88,9 @@ export const couple = {
       accountNumber: '0611001913311',
       qrImage: '/assets/qr-vietcombank.webp',
     },
-    // ⚠ Xem ghi chú BRIDE_PORTRAIT_ORIGINAL_URL ở đầu file.
-    portrait: '/assets/couple-2.jpg',
+    // Ảnh chân dung cô dâu gốc, đã tải về public/assets/bride-aodai.jpg
+    // (xem ghi chú BRIDE_PORTRAIT_ORIGINAL_URL ở đầu file).
+    portrait: '/assets/bride-aodai.jpg',
   },
 }
 
@@ -165,8 +165,14 @@ export const hero = {
   title: 'Duy Bình',
   // w-hlgaaavc gốc: "Thanh Thảo"   → mapping: "Hồng Chiên"
   subtitle: 'Hồng Chiên',
-  // Ảnh đôi ở hero (đã mirror về public/assets/)
-  photo: '/assets/hero-couple.jpg',
+  // Ảnh đôi trong THẺ NGÀY ở hero (`#w-9l8pfk6j .image-background`) — đã mirror
+  // về public/assets/.
+  photo: '/assets/couple-2.jpg',
+  // Ảnh đôi ở section ảnh `w-ubtq6ntw` (`#w-i0djb3fi .image-background`).
+  // `photo` và `photoSection` đã được ĐỔI NGƯỢC so với trước (yêu cầu chủ
+  // thiệp) — giữ hai field riêng để `data-image` của mỗi section khớp đúng
+  // với URL mà `global.css` thực sự vẽ.
+  photoSection: '/assets/hero-couple.jpg',
   // Phong bì mở — ảnh phủ lên hero. (Kèm thêm phong bì đóng tại
   // '/assets/envelope-closed.webp' nếu cần hiệu ứng đóng/mở.)
   envelope: '/assets/envelope-open.webp',

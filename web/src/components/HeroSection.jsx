@@ -58,20 +58,41 @@ import { useAutoScrollGroup } from '../hooks/useAutoScrollGroup'
  *  `235..647`, khung trắng `w-z9yzl7fd` cùng đáy 647) một khoảng 8px.
  *  Hệ quả: cả 4 khối Nhà Trai/Nhà Gái phải nằm dưới tiếp (xem `FAMILY_*`).
  *
- *  BỐ CỤC 4 KHỐI "NHÀ TRAI / NHÀ GÁI" — BẢNG 2×2, VÌ SỐ HỌC KHÔNG CHO PHÉP HƠN
+ *  BỐ CỤC 2 KHỐI "NHÀ TRAI | NHÀ GÁI" — MỘT HÀNG, CANH GIỮA
  *  ------------------------------------------------------------------
- *  Bản gốc xếp 4 khối thành MỘT cột ở `left:686px` (`top` 532/558/625/651,
- *  rộng 180px, `text-align:end`) ⇒ cao 27+25.5+27+25.5 = **105px**. Kéo vào
- *  khung đúng kiểu gốc (mép phải 420px, `shift = -446px`) thì cột đó phải nằm
- *  dưới khối mời. Ngân sách dọc còn lại của hero:
+ *  Bản gốc xếp 4 khối (`w-08zr1r86` Nhà Trai, `w-xjdsrgp5` PH Trai,
+ *  `w-j59hkrv8` Nhà Gái, `w-k4vnjy9f` PH Gái) thành MỘT cột ở `left:686px`
+ *  (`top` 532/558/625/651, rộng 180px, `text-align:end`) ⇒ cao
+ *  27+25.5+27+25.5 = **105px**. Kéo vào khung đúng kiểu gốc (mép phải 420px,
+ *  `shift = -446px`) thì cột đó phải nằm dưới khối mời. Ngân sách dọc còn lại
+ *  của hero:
  *    đáy thẻ ngày 647 → đáy hero 800 = **153px** < 84 (khối mời) + 105 (4 dòng)
- *    + 2 khoảng đệm ≥ 16 ⇒ cần ≥ 205px. VƯỢT quá 52px ⇒ bố cục 1 cột là bất khả
- *    thi trong khung cao 800px mà không sửa `global.css` (cấm) hoặc bóp méo font.
- *  ⇒ Chọn lưới **2 cột × 2 hàng**: `Nhà Trai | Nhà Gái` / `PH Trai | PH Gái`.
- *    Cao chỉ còn 27+25.5 = **52.5px** ⇒ vừa khít 153px còn lại.
- *  Cột trái = bên nhà trai, cột phải = bên nhà gái (đúng thứ tự đọc của thiệp cưới:
- *  tên đôi → SAVE THE DATE → thẻ ngày → "Trân Trọng Kính Mời: Quý Khách"
- *  → Nhà Trai / Nhà Gái).
+ *    + 2 khoảng đệm ≥ 16 ⇒ cần ≥ 205px. VƯỢT quá 52px ⇒ bố cục 1 cột là bất
+ *    khả thi trong khung cao 800px mà không sửa `global.css` (cấm) hoặc bóp mép
+ *    font.
+ *  ⇒ Lưới **2 cột × 2 hàng**: `Nhà Trai | Nhà Gái` / `PH Trai | PH Gái`, cao
+ *    chỉ còn 27+25.5 = **52.5px** ⇒ vừa khít 153px còn lại.
+ *
+ *  ✂ HÀNG 2 ĐÃ BỎ THEO YÊU CẦU CỦA CHỦ THIỆP
+ *  ------------------------------------------------------------------
+ *  Chủ thiệp muốn bỏ hai dòng "PH Trai" / "PH Gái" (`w-xjdsrgp5`, `w-k4vnjy9f`).
+ *  ⇒ Đã xoá: 2 element, 2 hook `useAnimation` (`animGroomParent`,
+ *    `animBrideParent`), 2 ref + 2 lệnh `useAutoScrollGroup`, hằng
+ *    `FAMILY_PARENT_TOP`, và 2 phần tử cuối của `FAMILY_DELAYS`.
+ *  Chỉ còn hàng 1: **"NHÀ TRAI | NHÀ GÁI"**, cao 27px, trên MỘT hàng.
+ *
+ *  CĂN GIỮA NGANG — HẰNG CỘT KHÔNG ĐỔI
+ *  ------------------------------------------------------------------
+ *  Mỗi khối rộng **180px** (`#w-08zr1r86` / `#w-j59hkrv8` trong global.css),
+ *  hai khối = 360px. Khung rộng 420px ⇒ còn đúng 60px ⇒ mỗi bên 30px là cân:
+ *    khối trái `left:30`  → 30..210
+ *    khối phải `left:210` → 210..390, mép phải 390 ⇒ còn 30px lề phải
+ *  ⇒ `FAMILY_LEFT_COLUMN = 30` / `FAMILY_RIGHT_COLUMN = 210` ĐÃ LÀ bố cục canh
+ *    giữa, giữ nguyên. Lưu ý: 210 KHÔNG phải để mép phải chạm 420 — cộng thêm
+ *    180px bề rộng thì chỉ chạm 390, đúng bằng lề trái 30px.
+ *  Cột trái = bên nhà trai, cột phải = bên nhà gái (đúng thứ tự đọc của thiệp
+ *  cưới: tên đôi → SAVE THE DATE → thẻ ngày → "Trân Trọng Kính Mời: Quý Khách"
+ *  → Nhà Trai | Nhà Gái).
  *
  *  VÌ SAO GHI ĐÈ `text-align:center` (bản gốc là `end`)
  *  ------------------------------------------------------------------
@@ -90,9 +111,21 @@ import { useAutoScrollGroup } from '../hooks/useAutoScrollGroup'
  *  chỗ mà không sửa `global.css`, ta đặt inline `top` cho thẻ ngày: 235 → 220
  *  (đáy 632, còn 168px). Tên cô dâu `w-hlgaaavc` có glyph kết thúc ở `y=195`,
  *  khung trắng của thẻ bắt đầu ở 220 ⇒ còn 25px đệm, an toàn.
- *  Lưới 2×2 rồi bố trí: thẻ 220..632 · khối mời 640..724 (đệm 8) ·
- *  hàng "Nhà.." 731..758 (đệm 7) · hàng "PH .." 762..787.5 (đệm 4) ·
- *  còn 12.5px chân trang tới đáy hero (800).
+ *
+ *  BỐ TRÍ DỌC HIỆN TẠI (sau khi bỏ hàng "PH ..")
+ *  ------------------------------------------------------------------
+ *    thẻ ngày       220..632
+ *    khối mời       640..724   (đệm 8)
+ *    hàng "Nhà .."  748..775   (đệm 24 · còn 25px tới đáy hero 800)
+ *  Khối mời cao đúng 84px: `w-u6bhn83l` `top:0 height:30` (0..30) và
+ *  `w-a0356azn` `top:51 height:33` (51..84) ⇒ đáy thật là 640 + 84 = **724**.
+ *  Dải trống còn lại tới đáy hero là 724..800 = 76px, hàng cao 27px ⇒ để CÂN
+ *  GIỮA: 724 + (76 - 27) / 2 = **748.5**, lấy **748** ⇒ đệm trên 24, đệm dưới
+ *  25 (lệch 1px, coi như cân).
+ *  Ghi chú: yêu cầu ban đầu là "dời `FAMILY_ROLE_TOP` LÊN một chút", nhưng hằng
+ *  cũ 731 vốn chỉ cách đáy khối mời đúng 7px — dời lên chỗ nào cũng dồn chữ
+ *  sát vào "Quý Khách" và làm cả cụm trượt lên trên. 748 vừa đáp ứng mục tiêu
+ *  "bố cục cân đối" vừa giữ khoảng hở an toàn, nên đã chọn 748.
  */
 
 const INVITE_GROUP_SHIFT = 442
@@ -100,20 +133,22 @@ const INVITE_GROUP_DURATION = 1200
 const INVITE_GROUP_DELAY = 2200
 const INVITE_GROUP_TOP = 640
 
-/** `top` gốc của thẻ ngày là 235px; hạ lên 220px để nhường chỗ cho lưới 2×2. */
+/** `top` gốc của thẻ ngày là 235px; hạ lên 220px để nhường chỗ cho khối mời
+ *  và hàng "Nhà Trai | Nhà Gái" phía dưới. */
 const DATE_CARD_TOP = 220
 
-/** Hàng 1 của lưới 2×2: "NHÀ TRAI" (trái) và "NHÀ GÁI" (phải). */
-const FAMILY_ROLE_TOP = 731
-/** Hàng 2 của lưới 2×2: "PH Trai" (trái) và "PH Gái" (phải). */
-const FAMILY_PARENT_TOP = 762
-/** Cột trái của lưới: `left` gốc 686px → dịch về 30px ⇒ `shift = 30 - 686`. */
+/** Hàng duy nhất còn lại: "NHÀ TRAI" (trái) và "NHÀ GÁI" (phải), canh giữa
+ *  trong dải 724..800 — số học và lý do nằm ở khối doc ở trên. */
+const FAMILY_ROLE_TOP = 748
+/** Cột trái: `left` gốc 686px → dịch về 30px ⇒ `shift = 30 - 686`.
+ *  Khối rộng 180px nên 30..210, còn 30px lề phải — cân. */
 const FAMILY_LEFT_COLUMN = 30
-/** Cột phải của lưới: `left` gốc 686px → dịch về 210px ⇒ `shift = 210 - 686`. */
+/** Cột phải: `left` gốc 686px → dịch về 210px ⇒ `shift = 210 - 686`.
+ *  Khối rộng 180px nên 210..390, còn 30px lề phải — cân. */
 const FAMILY_RIGHT_COLUMN = 210
 const FAMILY_DURATION = 1200
-/** Lệch 250ms giữa 4 khối, theo THỨ TỰ ĐỌC (hàng 1 trái→phải, rồi hàng 2). */
-const FAMILY_DELAYS = [3400, 3650, 4000, 4250]
+/** Lệch 250ms giữa 2 khối, theo THỨ TỰ ĐỌC (trái → phải). */
+const FAMILY_DELAYS = [3400, 3650]
 
 /** Căn giữa chữ trong cột — lý do kỹ thuật nằm ở khối doc ở trên. */
 const FAMILY_TEXT_STYLE = { textAlign: 'center' }
@@ -134,9 +169,7 @@ export default function HeroSection() {
   const animInviteLine = useAnimation() // w-er17bmp4   zoomIn     4s
   const animInviteGuest = useAnimation() // w-a0356azn   fadeInUp   3s
   const animGroomRole = useAnimation() // w-08zr1r86   fadeInLeft 3s
-  const animGroomParent = useAnimation() // w-xjdsrgp5   fadeInLeft 3s
   const animBrideRole = useAnimation() // w-j59hkrv8   fadeInLeft 3s
-  const animBrideParent = useAnimation() // w-k4vnjy9f   fadeInLeft 3s
 
   // w-pg4ud0dq nằm ở `left:-423px` (ngoài khung `.pageview` 420px) nên phải
   // dịch vào. `delay` 2200ms để khối này xuất hiện sau thẻ ngày (`w-uqk6fl7m`
@@ -150,11 +183,11 @@ export default function HeroSection() {
     delay: INVITE_GROUP_DELAY,
   })
 
-  // 4 khối Nhà Trai / PH Trai / Nhà Gái / PH Gái ở `left:686px` — ngoài khung
-  // `.pageview` 420px nên bản gốc cũng không vẽ được. Ở đây kéo vào khung bằng
-  // CÙNG hook `useAutoScrollGroup`: nó ghi `transform: translateX()` inline nên
-  // KHÔNG phải sửa `left` trong `global.css` và không đụng animation
-  // `fadeInLeft` đang chạy trên `.text-block-css` (con).
+  // 2 khối Nhà Trai / Nhà Gái ở `left:686px` — ngoài khung `.pageview` 420px nên
+  // bản gốc cũng không vẽ được. Ở đây kéo vào khung bằng CÙNG hook
+  // `useAutoScrollGroup`: nó ghi `transform: translateX()` inline nên KHÔNG phải
+  // sửa `left` trong `global.css` và không đụng animation `fadeInLeft` đang
+  // chạy trên `.text-block-css` (con).
   // Về tương tác với rule `#w-xxxx.animation{transform:perspective(1000px)}`:
   // style inline luôn thắng rule class, nên sau khi `useAnimation` gỡ class
   // `animation` thì `translateX` vẫn còn ⇒ vị trí không bị mất. Đổi lại
@@ -164,12 +197,9 @@ export default function HeroSection() {
   // trên `w-pg4ud0dq`: sau khi animation kết thúc, class đã gỡ nhưng
   // `transform: matrix(1,0,0,1,442,0)` vẫn còn và `left` vẫn đúng 19px.
   const groomRoleRef = useRef(null)
-  const groomParentRef = useRef(null)
   const brideRoleRef = useRef(null)
-  const brideParentRef = useRef(null)
 
-  // Thứ tự delay theo thứ tự đọc của lưới 2×2:
-  // hàng 1 trái→phải (Nhà Trai, Nhà Gái) rồi hàng 2 trái→phải (PH Trai, PH Gái).
+  // Thứ tự delay theo thứ tự đọc: Nhà Trai (trái) rồi Nhà Gái (phải).
   useAutoScrollGroup(groomRoleRef, FAMILY_LEFT_COLUMN - 686, true, {
     duration: FAMILY_DURATION,
     delay: FAMILY_DELAYS[0],
@@ -177,14 +207,6 @@ export default function HeroSection() {
   useAutoScrollGroup(brideRoleRef, FAMILY_RIGHT_COLUMN - 686, true, {
     duration: FAMILY_DURATION,
     delay: FAMILY_DELAYS[1],
-  })
-  useAutoScrollGroup(groomParentRef, FAMILY_LEFT_COLUMN - 686, true, {
-    duration: FAMILY_DURATION,
-    delay: FAMILY_DELAYS[2],
-  })
-  useAutoScrollGroup(brideParentRef, FAMILY_RIGHT_COLUMN - 686, true, {
-    duration: FAMILY_DURATION,
-    delay: FAMILY_DELAYS[3],
   })
 
   return (
@@ -277,7 +299,8 @@ export default function HeroSection() {
           </div>
 
           {/* Thẻ ngày cưới — `top` gốc 235px bị hạ lên 220px bằng inline style để
-              nhường chỗ cho khối mời + lưới 2×2 phía dưới (xem khối doc đầu file). */}
+              nhường chỗ cho khối mời + hàng "Nhà Trai | Nhà Gái" phía dưới
+              (xem khối doc đầu file). */}
           <div
             id="w-uqk6fl7m"
             style={{ top: DATE_CARD_TOP }}
@@ -358,9 +381,9 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Nhà Trai / PH Trai / Nhà Gái / PH Gái
-              Bản gốc: cả 4 ở `left:686px` — ngoài khung `.pageview` 420px nên không
-              được vẽ. Đo bằng Chrome trên BẢN GỐC: `getBoundingClientRect().left
+          {/* Nhà Trai / Nhà Gái
+              Bản gốc: cả 4 khối ở `left:686px` — ngoài khung `.pageview` 420px nên
+              không được vẽ. Đo bằng Chrome trên BẢN GỐC: `getBoundingClientRect().left
               === 686` ⇒ bản gốc cũng vô hình, không phải thiếu do bản port.
               Trong `event_data` chúng là `type:"text-block"`, `$parent:"oo7mkglu"`
               (con trực tiếp của section, KHÔNG nằm trong group nào) và không
@@ -372,9 +395,11 @@ export default function HeroSection() {
               `left` trong `global.css` giữ nguyên 686px; chỉ `translateX` được
               ghi inline bởi `useAutoScrollGroup` (xem lệnh hook ở trên), và `top`
               đặt tạm bằng inline style vì bố cục gốc chồng lấn thẻ ngày.
-              Bố cục 2×2 + lý do chọn: xem khối doc ở đầu file. */}
+              Bố cục 1 hàng canh giữa + lý do chọn `FAMILY_ROLE_TOP`: xem khối
+              doc ở đầu file. Hai khối "PH Trai" / "PH Gái" (`w-xjdsrgp5`,
+              `w-k4vnjy9f`) đã bị xoá theo yêu cầu của chủ thiệp. */}
 
-          {/* Nhà Trai — cột trái, hàng 1 */}
+          {/* Nhà Trai — cột trái */}
           <div
             id="w-08zr1r86"
             ref={groomRoleRef}
@@ -386,19 +411,7 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* PH Trai — cột trái, hàng 2 */}
-          <div
-            id="w-xjdsrgp5"
-            ref={groomParentRef}
-            style={{ top: FAMILY_PARENT_TOP }}
-            className={`com-text-block p-absolute is-animation ${animGroomParent}`}
-          >
-            <div className="text-block">
-              <p className="text-block-css full-width" style={FAMILY_TEXT_STYLE}>{couple.groom.parentLabel}<br /></p>
-            </div>
-          </div>
-
-          {/* Nhà Gái — cột phải, hàng 1 */}
+          {/* Nhà Gái — cột phải */}
           <div
             id="w-j59hkrv8"
             ref={brideRoleRef}
@@ -407,18 +420,6 @@ export default function HeroSection() {
           >
             <div className="text-block">
               <p className="text-block-css full-width" style={FAMILY_TEXT_STYLE}>{couple.bride.role}<br /></p>
-            </div>
-          </div>
-
-          {/* PH Gái — cột phải, hàng 2 */}
-          <div
-            id="w-k4vnjy9f"
-            ref={brideParentRef}
-            style={{ top: FAMILY_PARENT_TOP }}
-            className={`com-text-block p-absolute is-animation ${animBrideParent}`}
-          >
-            <div className="text-block">
-              <p className="text-block-css full-width" style={FAMILY_TEXT_STYLE}>{couple.bride.parentLabel}<br /></p>
             </div>
           </div>
 

@@ -14,13 +14,12 @@ import { useAnimation } from '../hooks/useAnimation'
  *  Lệch có chủ đích so với DOM gốc:
  *   1. Bỏ class `lazy` (xem `HeroSection.jsx`) — `.lazy` là `background:none
  *      !important`, giữ lại thì mất ảnh.
- *   2. `w-j5c07h6f .image-background` trong global.css vẫn trỏ URL CDN
- *      `.../3e9e5b97...jpeg.jpg` (ảnh chân dung cô dâu CHƯA được mirror về
- *      `public/`). `weddingData.js` đã xử lý sẵn bằng cách đổi
- *      `couple.bride.portrait` sang `/assets/couple-2.jpg`, nên
- *      `backgroundImage` được đặt inline để ghi đè ĐÚNG lớp ảnh — giữ nguyên
- *      `center center / cover no-repeat` của shorthand gốc nên hộp cắt ảnh
- *      không đổi một pixel nào. Không sửa global.css.
+ *   2. `w-j5c07h6f .image-background` trong global.css trỏ `/assets/bride-aodai.jpg`
+ *      — ảnh chân dung cô dâu gốc ĐÃ được tải về `public/assets/` (không còn là
+ *      URL CDN như trước). `weddingData.js` đặt `couple.bride.portrait` cùng giá
+ *      trị đó, nên `backgroundImage` đặt inline vẫn ghi đè ĐÚNG lớp ảnh — giữ
+ *      nguyên `center center / cover no-repeat` của shorthand gốc nên hộp cắt ảnh
+ *      không đổi một pixel nào.
  *      (`w-6yhej1sl` trỏ `/assets/groom.jpg` — khớp đúng `couple.groom.portrait`
  *      nên không cần override.)
  */

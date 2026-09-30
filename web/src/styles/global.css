@@ -522,6 +522,9 @@ b { font-weight: bold; }
    ĐƯỜNG DẪN ẢNH — map từ `../content.pancake.vn/...` sang `/assets/...`:
      a8087562...jpeg.jpg   -> /assets/hero-couple.jpg
      9d1b29d6...jpeg.jpg   -> /assets/couple-2.jpg      (gặp 3 lần)
+     3e9e5b97...jpeg.jpg   -> /assets/bride-aodai.jpg   (ảnh chân dung cô dâu gốc,
+                              đã tải về local — xem BRIDE_PORTRAIT_ORIGINAL_URL
+                              trong src/data/weddingData.js)
      e38d39fc...jpeg.jpg   -> /assets/groom.jpg
      d2cb23b9...jpeg.webp  -> /assets/qr-vietinbank.webp
      681a0833...jpeg.webp  -> /assets/qr-vietcombank.webp
@@ -531,7 +534,13 @@ b { font-weight: bold; }
      fef5132f...png.png    -> /assets/music-off.png (dùng ở markup/JS, không có trong block CSS)
      c9f574ca...gif.gif    -> /assets/music-on.gif  (dùng ở markup/JS, không có trong block CSS)
    Ảnh KHÔNG có bản local giữ nguyên URL CDN `https://content.pancake.vn/...`
-   (3e9e5b97, 4df14d4d, 69ccff4b, eb9548e7, be9a053a) + chuỗi base64 SVG giữ nguyên.
+   (4df14d4d, 69ccff4b, eb9548e7, be9a053a) + chuỗi base64 SVG giữ nguyên.
+
+   ĐÃ ĐỔI NGƯỢC 2 ẢNH (yêu cầu chủ thiệp): `w-9l8pfk6j` (ảnh trong thẻ ngày ở
+   hero) nay trỏ `/assets/couple-2.jpg`; `w-i0djb3fi` (ảnh ở section `w-ubtq6ntw`)
+   nay trỏ `/assets/hero-couple.jpg` — trước đó ngược lại với 2 giá trị này.
+   Các section KHÁC cũng dùng 2 ảnh này (`w-mi9zkapg`, `w-pvla7yvu`,
+   `w-sf3oc8wx`, `w-yuvcbgge`) giữ nguyên theo bản đồ ở trên.
    ============================================================================ */
 
 /* ----------------------------------------------------------------------
@@ -570,7 +579,7 @@ b { font-weight: bold; }
 #w-z9yzl7fd .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;box-shadow:0px 4px 4px 0px rgba(0,0,0,0.400);background:rgba(255, 255, 255, 1);background-clip: padding-box;}
 #w-9l8pfk6j{top:13.5px;left:27px;width:269px;height:289px;}
 #w-9l8pfk6j .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
-#w-9l8pfk6j .image-background{width:269px;height:403.6576787807738px;top:0px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/hero-couple.jpg) border-box;--type:0;}
+#w-9l8pfk6j .image-background{width:269px;height:403.6576787807738px;top:0px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/couple-2.jpg) border-box;--type:0;}
 #w-9l8pfk6j .image-background-compare{background: undefined;clip: rect(0, 134.5px, 289px, 0);--type:0;}
 #w-n4zdbmhj{top:315.5px;left:113.5px;width:91px;height:auto;}
 #w-n4zdbmhj .line-container{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;}
@@ -654,7 +663,7 @@ b { font-weight: bold; }
 #w-8grm4rnu .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;box-shadow:0px 4px 4px 0px rgba(0,0,0,0.400);background:rgba(255, 255, 255, 1);background-clip: padding-box;}
 #w-i0djb3fi{top:12.5px;left:7px;width:391px;height:303px;}
 #w-i0djb3fi .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
-#w-i0djb3fi .image-background{width:391.5px;height:587.4794841735053px;top:-33px;left:-0.5px;background:center center/ cover no-repeat scroll content-box url(/assets/couple-2.jpg) border-box;--type:0;}
+#w-i0djb3fi .image-background{width:391.5px;height:587.4794841735053px;top:-33px;left:-0.5px;background:center center/ cover no-repeat scroll content-box url(/assets/hero-couple.jpg) border-box;--type:0;}
 #w-i0djb3fi .image-background-compare{background: undefined;clip: rect(0, 195.5px, 303px, 0);--type:0;}
 #w-7rctms59{top:323px;left:141px;width:125px;height:auto;}
 #w-7rctms59 .line-container{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;}
@@ -823,7 +832,7 @@ b { font-weight: bold; }
 #w-6yhej1sl .image-background-compare{background: undefined;clip: rect(0, 97px, 290px, 0);--type:0;}
 #w-j5c07h6f{top:0px;left:213.5px;width:194px;height:290px;}
 #w-j5c07h6f .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
-#w-j5c07h6f .image-background{width:193.66666666666666px;height:290.5px;top:0px;left:0px;background:center center/ cover no-repeat scroll content-box url(https://content.pancake.vn/web-media-263/42/81/30/9b/3e9e5b97412c70a791a996c6cc1071826fdae0d91830e04e32c65c7f-w:1024-h:1536-l:163667-t:image/jpeg.jpg) border-box;--type:0;}
+#w-j5c07h6f .image-background{width:193.66666666666666px;height:290.5px;top:0px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/bride-aodai.jpg) border-box;--type:0;}
 #w-j5c07h6f .image-background-compare{background: undefined;clip: rect(0, 97px, 290px, 0);--type:0;}
 /* ----------------------------------------------------------------------
 -- KHU VỰC 12/13 · id section: #w-irpujf29 · .com-section · mục đích: thank-you · 3 element con

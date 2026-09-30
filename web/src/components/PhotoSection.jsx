@@ -1,4 +1,4 @@
-import { couple } from '../data/weddingData'
+import { hero } from '../data/weddingData'
 import { useAnimation } from '../hooks/useAnimation'
 
 /**
@@ -9,7 +9,8 @@ import { useAnimation } from '../hooks/useAnimation'
  *  Một group gồm: khung trắng, ảnh đôi, và đường kẻ bên dưới.
  *
  *  Ảnh gốc trỏ CDN `content.pancake.vn/.../9d1b29d6...jpg`; `global.css` đã
- *  được port sang bản local `/assets/couple-2.jpg` nên không cần gì thêm ở đây.
+ *  được port sang bản local. Sau khi ĐỔI NGƯỢC 2 ảnh (yêu cầu chủ thiệp), ảnh ở
+ *  đây là `/assets/hero-couple.jpg` — khớp `hero.photoSection`.
  *  `data-image` chỉ để giữ liên kết với `weddingData` (attribute vô hại, URL
  *  thật vẫn do `#w-i0djb3fi .image-background` trong global.css quyết định).
  *
@@ -43,7 +44,7 @@ export default function PhotoSection() {
                 <div className="image-block-css p-relative full-width full-height full-mask-size mask-position">
                   <div
                     className="image-background p-absolute"
-                    data-image={couple.bride.portrait}
+                    data-image={hero.photoSection}
                     role="img"
                     aria-label=""
                   />
