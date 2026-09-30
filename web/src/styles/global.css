@@ -585,7 +585,17 @@ b { font-weight: bold; }
 #w-u6bhn83l{top:0px;left:0px;width:382px;height:30px;}
 #w-u6bhn83l .text-block{background:;}
 #w-u6bhn83l .text-block-css{-webkit-text-stroke:0px rgba(0,0,0,1.000);border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'SVN-Mightiest.otf', sans-serif;font-size:20px;line-height:1.5;text-align:center;--type:0;}
-#w-er17bmp4{top:66.5px;left:71px;width:240px;height:auto;}
+/* SỬA LỖI TOẠ ĐỘ CÓ SẴN TỪ BẢN GỐC (WebCake) — đường kẻ dotted cắt ngang chữ.
+   `top:66.5px` là giá trị designer nhập trên trình biên tập; nó chỉ "đúng" khi
+   group `w-pg4ud0dq` nằm ngoài khung ở `left:-423px` nên không ai thấy. Bản React
+   đã kéo group này vào khung (hook `useAutoScrollGroup`) ⇒ lỗi lộ ra: đường kẻ
+   rơi vào khối chữ `w-a0356azn` ("Quý Khách", `top:51px` → `51..84`) nên cắt ngang
+   chữ. Đo bằng Chrome trước khi sửa: đường kẻ ở `y=670.5`, glyph "Quý Khách" ở
+   `650..676` ⇒ cắt đúng giữa chữ.
+   Vì sao 40px: `.line-css` có `padding:8px 0` nên vạch border thực sự nằm ở
+   `top + 8px = 48px`, tức nằm trong khoảng trống 30 (đáy "Trân Trọng Kính Mời:")
+   → 51 (đỉnh "Quý Khách"). Dải an toàn của `top` là 38–42px; 40px là giữa dải. */
+#w-er17bmp4{top:40px;left:71px;width:240px;height:auto;}
 #w-er17bmp4 .line-container{border-color:rgba(0, 0, 0, 1);border-style:dotted;border-width:1px;}
 #w-a0356azn{top:51px;left:31px;width:320px;height:33px;}
 #w-a0356azn .text-block{background:;}
