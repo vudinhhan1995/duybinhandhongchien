@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import HeroSection from './components/HeroSection.jsx'
 import CoupleNamesSection from './components/CoupleNamesSection.jsx'
 import PhotoSection from './components/PhotoSection.jsx'
@@ -76,6 +76,27 @@ export default function App() {
   // 'groom' | 'bride' → BankPopup · 'thanks' → ThankYouPopup · null → đóng hết
   const [popup, setPopup] = useState(null)
   const closePopup = useCallback(() => setPopup(null), [])
+
+  useEffect(() => {
+    function adjustScale() {
+      const pageview = document.querySelector('.pageview')
+      if (!pageview) return
+      const w = window.innerWidth
+      if (w < 420 && w > 0) {
+        const scale = w / 420
+        pageview.style.zoom = `${scale}`
+      } else {
+        pageview.style.zoom = '1'
+      }
+    }
+    adjustScale()
+    window.addEventListener('resize', adjustScale)
+    window.addEventListener('orientationchange', adjustScale)
+    return () => {
+      window.removeEventListener('resize', adjustScale)
+      window.removeEventListener('orientationchange', adjustScale)
+    }
+  }, [])
 
   return (
     <>
