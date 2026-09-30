@@ -1,0 +1,60 @@
+# ===== HTTrack mirror artifacts (KHÔNG commit) =====
+/backblue.gif
+/fade.gif
+/hts-log.txt
+/index.html
+/hts-cache/
+/www.ewedinvite.online/
+/a.pancake.vn/
+/api.webcake.io/
+/content.pancake.vn/
+
+# ===== extracted reference (regenerable, 774KB) =====
+/_reference/
+
+# ===== file tạm / ảnh chụp màn hình ở GỐC repo (KHÔNG commit) =====
+# Dùng dấu / ở đầu để chỉ áp dụng cho thư mục gốc, KHÔNG đụng tới
+# web/public/assets/*.png (đó là asset thật của dự án).
+/*.png
+/*.ps1
+/_check*
+/_probe*
+/_out*
+/dist-check/
+/web/_check*
+/web/_probe*
+/web/_out*
+/web/_orig_*
+
+# ===== node =====
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# ===== env - KHÔNG BAO GIỜ commit secrets =====
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ===== editor / OS =====
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ===== logs =====
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log

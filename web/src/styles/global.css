@@ -1,0 +1,1348 @@
+/* ============================================================================
+   THIỆP CƯỚI — DUY BÌNH & HỒNG CHIÊN
+   stylesheet port trung thực từ trang gốc:
+     www.ewedinvite.online/DUYBINH&HONGCHIEN.html
+     (WebCake editor export, style block #1 = framework, #2/#3 = layout)
+
+   NGUYÊN TẮC PORT:
+     • Mọi giá trị px / rgba / chuỗi base64 mask-image được giữ NGUYÊN VĂN.
+     • Mọi id `#w-xxxx` được giữ NGUYÊN TẮC — React component dùng đúng id này.
+     • Ảnh trong `public/assets/` được map từ đường dẫn `../content.pancake.vn/...`
+       sang đường dẫn TUYỆT ĐỐI `/assets/...` (Vite serve `public/` ở gốc domain).
+     • Ảnh không có bản local giữ nguyên URL CDN `https://content.pancake.vn/...`.
+
+   Bản chốt chuẩn bị: dùng làm nguồn cho `web/src/main.jsx`.
+   ============================================================================ */
+
+
+/* ============================================================================
+   PHẦN 0 — FONT GOOGLE
+   Trang gốc nạp Roboto (framework block #1), Cormorant Upright / Crimson Pro /
+   Arial (dùng trong các text block). Không có bản local nên lấy từ CDN.
+   Dòng @import thứ hai là của riêng khối calendar (block #6 trong body gốc):
+   "Pinyon Script" (tương đương PinyonScript-Regular.ttf đã @font-face ở PHẦN 5)
+   và "Open Sans" dùng cho hàng thứ + ô ngày. Giữ nguyên như bản gốc.
+   ============================================================================ */
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900|Cormorant%20Upright:100,300,400,700,900|Crimson%20Pro:100,300,400,700,900|Arial:100,300,400,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Open+Sans:wght@400;700&display=swap');
+
+
+/* ============================================================================
+   PHẦN 1 — RESET + FRAMEWORK (WebCake)
+   Nguồn: style block đầu tiên trong <head> (17.675 ký tự), bắt đầu bằng
+   `*{margin:0;padding:0;box-sizing:border-box;...}`. Chỉ giữ rule CẦN THIẾT cho
+   trang này: bỏ carousel / video-player / gallery / form-động của framework.
+   `.pageview` đã gộp `overflow:hidden` (framework) + `max-width:420px;margin:0
+   auto` (block layout) và thêm `position:relative` làm gốc toạ độ cho con.
+   ============================================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font: inherit;
+  border: 0;
+}
+
+html {
+  font-size: 12px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'Roboto', sans-serif;
+  font-feature-settings: 'tnum';
+}
+
+body {
+  background-color: #fff;
+  font-size: 12px;
+  color: #000;
+}
+
+.pageview {
+  overflow: hidden;
+  max-width: 420px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.lazy {
+  background: none !important;
+  -webkit-mask-image: none !important;
+}
+
+.full-height { height: 100%; }
+.full-width  { width: 100%; }
+.full-mask-size { -webkit-mask-size: 100% 100%; }
+.mask-position    { -webkit-mask-position: 0% 0%; }
+.p-absolute { position: absolute; }
+.p-relative { position: relative; }
+.d-none { display: none; }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img:not([src]), img[src=""] { visibility: hidden; }
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ol, ul { list-style: none; }
+b { font-weight: bold; }
+
+.no-animate * {
+  transition: none !important;
+  animation: none !important;
+}
+
+.visibility-hidden { visibility: hidden !important; }
+.cursor-pointer { cursor: pointer; }
+
+
+/* --- Khung layout bắt buộc của WebCake ------------------------------------ */
+
+.section-wrapper {
+  margin: 0 auto;
+  max-width: 420px;
+  position: relative;
+}
+
+.section-container {
+  margin: auto;
+  max-width: 420px;
+  height: 100%;
+  position: relative;
+}
+
+.section-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.000);
+}
+
+.com-section { margin-bottom: -1px; }
+
+.group-container {
+  width: 100%;
+  height: 100%;
+}
+
+.image-block-css {
+  overflow: hidden;
+  position: relative;
+  will-change: filter;
+}
+
+.image-background {
+  position: absolute;
+  margin: 0 auto;
+}
+
+.text-block {
+  position: relative;
+}
+
+.text-block-css {
+  word-break: break-word;
+  -webkit-background-clip: text !important;
+}
+
+.line-css { padding: 8px 0; }
+
+.line-container {
+  border-left-width: 0 !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-style: solid;
+}
+
+.rectangle-css { position: relative; }
+
+.com-button {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 200ms ease-out;
+}
+
+.com-button:active { transform: translateY(5px); }
+
+.button-css {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.button-text {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: unset;
+}
+
+.input-css {
+  overflow: hidden;
+  position: relative;
+}
+
+.input-css input {
+  background: transparent;
+  color: inherit;
+  padding-left: 10px;
+  border-radius: 0;
+  text-align: inherit;
+  letter-spacing: inherit;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  font-size: 13px;
+}
+
+.select-css {
+  overflow: hidden;
+  position: relative;
+}
+
+.select-css select {
+  background: transparent;
+  padding-right: 26px;
+  padding-left: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #979797;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.select-css select:valid { color: inherit; }
+.select-css option:first-child { color: #979797; }
+
+.chevron {
+  pointer-events: none;
+  color: #979797;
+  position: absolute;
+  right: 0;
+  width: 26px;
+  height: 100%;
+  top: 0;
+}
+
+.chevron .icon {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-radius: 100px;
+  top: calc(50% - 7px);
+  left: calc(50% - 7px);
+}
+
+.chevron .icon::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+  transform: rotate(45deg);
+}
+
+.popup-backdrop {
+  background: rgba(0, 0, 0, .5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000000;
+}
+
+.popup-center {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.com-popup { z-index: 1000001; }
+.popup-background { overflow: hidden; }
+
+.frame-html-box iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+
+/* ============================================================================
+   PHẦN 2 — 8 @keyframes TỰ VIẾT LẠI
+   LƯU Ý: trang gốc THAM CHIẾU 8 animation này (fadeInUp, fadeInDown,
+   fadeInLeft, fadeInRight, zoomIn, slideInUp, slideInRight, pulse) nhưng
+   KHÔNG định nghĩa chúng ở bất kỳ đâu — chúng đến từ animate.css v4 nạp bên
+   ngoài, file đó không có trong mirror. Dưới đây là bản viết lại khớp
+   animate.css 4.1.1, giữ nguyên thứ tự property và giá trị gốc.
+   Đối chiếu khớp 100% với mảng `animations` (44 phần tử) trong css-spec.json.
+   ============================================================================ */
+
+/* animate.css 4.1.1 — @keyframes fadeInUp: opacity 0→1, translate3d(0,100%,0)→translate3d(0,0,0) */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate3d(0, 100%, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* animate.css 4.1.1 — @keyframes fadeInDown: opacity 0→1, translate3d(0,-100%,0)→translate3d(0,0,0) */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translate3d(0, -100%, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* animate.css 4.1.1 — @keyframes fadeInLeft: opacity 0→1, translate3d(-100%,0,0)→translate3d(0,0,0) */
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translate3d(-100%, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* animate.css 4.1.1 — @keyframes fadeInRight: opacity 0→1, translate3d(100%,0,0)→translate3d(0,0,0) */
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translate3d(100%, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* animate.css 4.1.1 — @keyframes zoomIn: opacity 0→1, scale3d(.5,.5,.5)→scale3d(1,1,1) */
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale3d(.5, .5, .5); }
+  to   { opacity: 1; transform: scale3d(1, 1, 1); }
+}
+
+/* animate.css 4.1.1 — @keyframes slideInUp: visibility:visible cả 2 keyframe, translate3d(0,-100%,0)→translate3d(0,0,0) */
+@keyframes slideInUp {
+  from { visibility: visible; transform: translate3d(0, -100%, 0); }
+  to   { visibility: visible; transform: translate3d(0, 0, 0); }
+}
+
+/* animate.css 4.1.1 — @keyframes slideInRight: visibility:visible cả 2 keyframe, translate3d(100%,0,0)→translate3d(0,0,0) */
+@keyframes slideInRight {
+  from { visibility: visible; transform: translate3d(100%, 0, 0); }
+  to   { visibility: visible; transform: translate3d(0, 0, 0); }
+}
+
+/* animate.css 4.1.1 — @keyframes pulse: scale3d(1,1,1) → scale3d(1.1,1.1,1.1) @50% → scale3d(1,1,1) */
+@keyframes pulse {
+  0%   { transform: scale3d(1, 1, 1); }
+  50%  { transform: scale3d(1.1, 1.1, 1.1); }
+  100% { transform: scale3d(1, 1, 1); }
+}
+
+
+/* ============================================================================
+   PHẦN 3 — 44 RULE ANIMATION
+   Trích NGUYÊN VĂN 44 cặp rule `#w-XXXX.animation` từ block layout gốc.
+   Dạng: #w-XXXX.animation{transform: perspective(1000px);}
+          #w-XXXX.animation  <target>{animation-name:...;-webkit-...;animation-delay:0s;...}
+   Selector target giữ nguyên: .text-block-css / .image-block-css / .line-css /
+   .button-css / > .group-container.  (Lưu ý bản gốc có 2 khoảng trắng trước
+   target — giữ nguyên để đối chiếu 1-1 với css-spec.json.)
+   ============================================================================ */
+
+/* ĐÃ XOÁ (2026-09-30) — rule KHÔNG có trong bản gốc, gây mất toàn bộ nội dung:
+   `.animation { opacity: 0; }`
+   Bản gốc không có rule opacity tĩnh nào cho `.animation`; keyframe tự lo
+   `from{opacity:0} → to{opacity:1}`. Vì `animation-fill-mode` mặc định là `none`,
+   sau khi keyframe kết thúc opacity rơi về 0 của rule này ⇒ element biến mất.
+   Giờ `useAnimation.js` gỡ class `animation` ở sự kiện `animationend` (đúng hành
+   vi JS của WebCake) nên không cần rule ẩn tĩnh.
+   Ghi chú đã đối chiếu cả 44 rule ở PHẦN 3: `animation-iteration-count` đều = 1
+   (kể cả `pulse` của nút bản đồ `w-068i77jq`) ⇒ không có animation hữu hạn nào
+   bị kẹt, `animationend` luôn bắn. Hai animation `infinite` trong file
+   (`wc-pulse` trên `#music-toggle.vibrating`, `heartFlash` trên `.heart-...`)
+   không mang class `animation` và không thuộc 44 rule này. */
+
+/* --- 1/44 · w-oltk5ygk · fadeInUp · 3s · .image-block-css --- */
+#w-oltk5ygk.animation{transform: perspective(1000px);}#w-oltk5ygk.animation  .image-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 2/44 · w-r2sccdsn · fadeInLeft · 4s · .text-block-css --- */
+#w-r2sccdsn.animation{transform: perspective(1000px);}#w-r2sccdsn.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+
+/* --- 3/44 · w-hlgaaavc · fadeInRight · 4s · .text-block-css --- */
+#w-hlgaaavc.animation{transform: perspective(1000px);}#w-hlgaaavc.animation  .text-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+
+/* --- 4/44 · w-guq16spj · zoomIn · 4s · .text-block-css --- */
+#w-guq16spj.animation{transform: perspective(1000px);}#w-guq16spj.animation  .text-block-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+
+/* --- 5/44 · w-dvk50tsn · fadeInDown · 2s · .text-block-css --- */
+#w-dvk50tsn.animation{transform: perspective(1000px);}#w-dvk50tsn.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 6/44 · w-96kvstdo · fadeInDown · 2s · .text-block-css --- */
+#w-96kvstdo.animation{transform: perspective(1000px);}#w-96kvstdo.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 7/44 · w-adxgp7e3 · fadeInDown · 2s · .text-block-css --- */
+#w-adxgp7e3.animation{transform: perspective(1000px);}#w-adxgp7e3.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 8/44 · w-uqk6fl7m · slideInUp · 2s · > .group-container --- */
+#w-uqk6fl7m.animation{transform: perspective(1000px);}#w-uqk6fl7m.animation > .group-container{animation-name:slideInUp;-webkit-animation-name:slideInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 9/44 · w-pg4ud0dq · fadeInLeft · 2s · > .group-container --- */
+#w-pg4ud0dq.animation{transform: perspective(1000px);}#w-pg4ud0dq.animation > .group-container{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 10/44 · w-u6bhn83l · fadeInUp · 3s · .text-block-css --- */
+#w-u6bhn83l.animation{transform: perspective(1000px);}#w-u6bhn83l.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 11/44 · w-er17bmp4 · zoomIn · 4s · .line-css --- */
+#w-er17bmp4.animation{transform: perspective(1000px);}#w-er17bmp4.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+
+/* --- 12/44 · w-a0356azn · fadeInUp · 3s · .text-block-css --- */
+#w-a0356azn.animation{transform: perspective(1000px);}#w-a0356azn.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 13/44 · w-08zr1r86 · fadeInLeft · 3s · .text-block-css --- */
+#w-08zr1r86.animation{transform: perspective(1000px);}#w-08zr1r86.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 14/44 · w-xjdsrgp5 · fadeInLeft · 3s · .text-block-css --- */
+#w-xjdsrgp5.animation{transform: perspective(1000px);}#w-xjdsrgp5.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 15/44 · w-j59hkrv8 · fadeInLeft · 3s · .text-block-css --- */
+#w-j59hkrv8.animation{transform: perspective(1000px);}#w-j59hkrv8.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 16/44 · w-k4vnjy9f · fadeInLeft · 3s · .text-block-css --- */
+#w-k4vnjy9f.animation{transform: perspective(1000px);}#w-k4vnjy9f.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 17/44 · w-xykbkqrm · fadeInRight · 3s · .text-block-css --- */
+#w-xykbkqrm.animation{transform: perspective(1000px);}#w-xykbkqrm.animation  .text-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 18/44 · w-m7ni6fwc · slideInRight · 3s · .text-block-css --- */
+#w-m7ni6fwc.animation{transform: perspective(1000px);}#w-m7ni6fwc.animation  .text-block-css{animation-name:slideInRight;-webkit-animation-name:slideInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 19/44 · w-yffc4isu · slideInRight · 3s · .text-block-css --- */
+#w-yffc4isu.animation{transform: perspective(1000px);}#w-yffc4isu.animation  .text-block-css{animation-name:slideInRight;-webkit-animation-name:slideInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 20/44 · w-ysm6s9rn · fadeInLeft · 3s · .text-block-css --- */
+#w-ysm6s9rn.animation{transform: perspective(1000px);}#w-ysm6s9rn.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 21/44 · w-5n79dm9x · fadeInRight · 2s · .text-block-css --- */
+#w-5n79dm9x.animation{transform: perspective(1000px);}#w-5n79dm9x.animation  .text-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 22/44 · w-qj312suo · fadeInUp · 2s · > .group-container --- */
+#w-qj312suo.animation{transform: perspective(1000px);}#w-qj312suo.animation > .group-container{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 23/44 · w-7rctms59 · zoomIn · 3s · .line-css --- */
+#w-7rctms59.animation{transform: perspective(1000px);}#w-7rctms59.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 24/44 · w-qz3qdpb0 · fadeInUp · 1s · .text-block-css --- */
+#w-qz3qdpb0.animation{transform: perspective(1000px);}#w-qz3qdpb0.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+
+/* --- 25/44 · w-yjlcb3gn · fadeInUp · 1s · .text-block-css --- */
+#w-yjlcb3gn.animation{transform: perspective(1000px);}#w-yjlcb3gn.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+
+/* --- 26/44 · w-uxlnltgu · fadeInUp · 1s · .text-block-css --- */
+#w-uxlnltgu.animation{transform: perspective(1000px);}#w-uxlnltgu.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+
+/* --- 27/44 · w-gqyiaaja · fadeInUp · 1s · .text-block-css --- */
+#w-gqyiaaja.animation{transform: perspective(1000px);}#w-gqyiaaja.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+
+/* --- 28/44 · w-tijrneg8 · zoomIn · 4s · .line-css --- */
+#w-tijrneg8.animation{transform: perspective(1000px);}#w-tijrneg8.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+
+/* --- 29/44 · w-0pxu27tu · fadeInUp · 2s · .text-block-css --- */
+#w-0pxu27tu.animation{transform: perspective(1000px);}#w-0pxu27tu.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 30/44 · w-afaknanm · fadeInUp · 2s · .text-block-css --- */
+#w-afaknanm.animation{transform: perspective(1000px);}#w-afaknanm.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 31/44 · w-44z6qo7q · fadeInUp · 2s · .text-block-css --- */
+#w-44z6qo7q.animation{transform: perspective(1000px);}#w-44z6qo7q.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 32/44 · w-6wnismlg · fadeInUp · 2s · .text-block-css --- */
+#w-6wnismlg.animation{transform: perspective(1000px);}#w-6wnismlg.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 33/44 · w-7ef8d17j · zoomIn · 2s · .text-block-css --- */
+#w-7ef8d17j.animation{transform: perspective(1000px);}#w-7ef8d17j.animation  .text-block-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 34/44 · w-5kxmzkjd · fadeInUp · 2s · .text-block-css --- */
+#w-5kxmzkjd.animation{transform: perspective(1000px);}#w-5kxmzkjd.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 35/44 · w-ttfn08oi · fadeInUp · 2s · .text-block-css --- */
+#w-ttfn08oi.animation{transform: perspective(1000px);}#w-ttfn08oi.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+
+/* --- 36/44 · w-wd0oiw7y · zoomIn · 3s · .line-css --- */
+#w-wd0oiw7y.animation{transform: perspective(1000px);}#w-wd0oiw7y.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 37/44 · w-068i77jq · pulse · 3s · .button-css --- */
+#w-068i77jq.animation{transform: perspective(1000px);}#w-068i77jq.animation  .button-css{animation-name:pulse;-webkit-animation-name:pulse;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 38/44 · w-5bzhufjm · fadeInUp · 3s · .text-block-css --- */
+#w-5bzhufjm.animation{transform: perspective(1000px);}#w-5bzhufjm.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 39/44 · w-cztebelr · zoomIn · 3s · .line-css --- */
+#w-cztebelr.animation{transform: perspective(1000px);}#w-cztebelr.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 40/44 · w-6yhej1sl · fadeInLeft · 3s · .image-block-css --- */
+#w-6yhej1sl.animation{transform: perspective(1000px);}#w-6yhej1sl.animation  .image-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 41/44 · w-j5c07h6f · fadeInRight · 3s · .image-block-css --- */
+#w-j5c07h6f.animation{transform: perspective(1000px);}#w-j5c07h6f.animation  .image-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 42/44 · w-juz3up03 · fadeInUp · 3s · .text-block-css --- */
+#w-juz3up03.animation{transform: perspective(1000px);}#w-juz3up03.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 43/44 · w-gr20jchq · fadeInDown · 3s · .text-block-css --- */
+#w-gr20jchq.animation{transform: perspective(1000px);}#w-gr20jchq.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+
+/* --- 44/44 · w-1bubiyix · fadeInUp · 4s · .text-block-css --- */
+#w-1bubiyix.animation{transform: perspective(1000px);}#w-1bubiyix.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+
+
+
+/* ============================================================================
+   PHẦN 4 — TOÀN BỘ RULE `#w-` CỦA TRANG (layout do WebCake export)
+
+   Nguồn: style block #2 của trang gốc (49.660 ký tự, 424 rule top-level).
+   Block #3 (49.619 ký tự, 423 rule) là bản GIỐNG HỆT, khác duy nhất là
+   không có `.pageview{max-width:420px;margin:0 auto;}` -> port block #2 là đủ.
+   3 rule `.section-container` / `.section-wrapper` / `.pageview` ở đầu block đã
+   được gộp vào PHẦN 1 (trùng lặp) -> còn lại 421 rule bên dưới:
+     • 418 rule selector bắt đầu bằng `#w-`  (giữ nguyên văn mọi giá trị
+       px / rgba / chuỗi base64 mask-image)
+     •   3 rule `.-popup-*` / `.-checkout-gallery` / `.-zoom` cuối block —
+       helper của WebCake cho tính năng trang này không dùng, giữ nguyên văn.
+   Tổng cộng: 3 (PHẦN 1) + 418 + 3 = 424 rule, khớp đúng block #2 gốc.
+
+   ĐƯỜNG DẪN ẢNH — map từ `../content.pancake.vn/...` sang `/assets/...`:
+     a8087562...jpeg.jpg   -> /assets/hero-couple.jpg
+     9d1b29d6...jpeg.jpg   -> /assets/couple-2.jpg      (gặp 3 lần)
+     e38d39fc...jpeg.jpg   -> /assets/groom.jpg
+     d2cb23b9...jpeg.webp  -> /assets/qr-vietinbank.webp
+     681a0833...jpeg.webp  -> /assets/qr-vietcombank.webp
+     8763c2ba...png.webp   -> /assets/envelope-closed.webp
+     53da2faa...png.webp   -> /assets/envelope-open.webp   (gặp 2 lần)
+     829a2a25...png.png    -> /assets/heart.png   (dùng ở markup/JS, không có trong block CSS)
+     fef5132f...png.png    -> /assets/music-off.png (dùng ở markup/JS, không có trong block CSS)
+     c9f574ca...gif.gif    -> /assets/music-on.gif  (dùng ở markup/JS, không có trong block CSS)
+   Ảnh KHÔNG có bản local giữ nguyên URL CDN `https://content.pancake.vn/...`
+   (3e9e5b97, 4df14d4d, 69ccff4b, eb9548e7, be9a053a) + chuỗi base64 SVG giữ nguyên.
+   ============================================================================ */
+
+/* ----------------------------------------------------------------------
+-- KHU VỰC 1/13 · id section: #w-oo7mkglu · .com-section · mục đích: hero · 25 element con
+---------------------------------------------------------------------- */
+#w-oo7mkglu{top:0px;left:0px;position:relative;width:420px;height:800px;}
+#w-oo7mkglu .section-wrapper{opacity:1;}
+#w-oo7mkglu{margin-bottom: -1px;}
+#w-oo7mkglu .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-xe82plbq{top:0px;left:0px;width:420px;height:800px;}
+#w-oltk5ygk{top:366.5085144042969px;left:211.9815673828125px;width:350px;height:456px;}
+#w-oltk5ygk .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-oltk5ygk .image-background{width:350.8716327884674px;height:668.3269195970807px;top:-118.45346522709444px;left:-0.49822064056943743px;background:center center/ cover no-repeat scroll content-box  border-box url(/assets/envelope-open.webp);--type:0;}
+#w-oltk5ygk .image-background-compare{background: undefined;clip: rect(0, 175px, 456px, 0);--type:0;}
+#w-r2sccdsn{top:59.5px;left:0px;width:420px;height:80px;}
+#w-r2sccdsn .text-block{background:;}
+#w-r2sccdsn .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(140,16,7,1.000);font-family:'PinyonScript-Regular.ttf', sans-serif;font-size:40px;letter-spacing:1px;line-height:2;text-align:center;--type:0;}
+#w-hlgaaavc{top:130px;left:0px;width:420px;height:80px;}
+#w-hlgaaavc .text-block{background:;}
+#w-hlgaaavc .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(140,16,7,1.000);font-family:'PinyonScript-Regular.ttf', sans-serif;font-size:40px;letter-spacing:1px;line-height:2;text-align:center;--type:0;}
+#w-guq16spj{top:109px;left:122px;width:176px;height:50px;}
+#w-guq16spj .text-block{background:;}
+#w-guq16spj .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'LuxuriousScript-Regular.ttf', sans-serif;font-size:25px;line-height:2;text-align:center;--type:0;}
+#w-80qtaa9a{top:20px;left:0px;width:420px;height:38px;}
+#w-dvk50tsn{top:0px;left:0px;width:280px;height:37.5px;}
+#w-dvk50tsn .text-block{background:;}
+#w-dvk50tsn .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Cormorant Upright', sans-serif;font-size:25px;letter-spacing:1px;text-align:center;--type:0;}
+#w-96kvstdo{top:0px;left:140px;width:280px;height:37.5px;}
+#w-96kvstdo .text-block{background:;}
+#w-96kvstdo .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Cormorant Upright', sans-serif;font-size:25px;letter-spacing:1px;text-align:center;--type:0;}
+#w-adxgp7e3{top:8.5px;left:146.5px;width:127px;height:22.5px;}
+#w-adxgp7e3 .text-block{background:;}
+#w-adxgp7e3 .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'NVN-Motherland-Signature.ttf', sans-serif;font-size:15px;letter-spacing:1px;text-align:center;--type:0;}
+#w-uqk6fl7m{top:235px;left:52.5px;width:319px;height:412px;}
+#w-z9yzl7fd{top:0px;left:11.5px;width:295px;height:412px;}
+#w-z9yzl7fd .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;box-shadow:0px 4px 4px 0px rgba(0,0,0,0.400);background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-9l8pfk6j{top:13.5px;left:27px;width:269px;height:289px;}
+#w-9l8pfk6j .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-9l8pfk6j .image-background{width:269px;height:403.6576787807738px;top:0px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/hero-couple.jpg) border-box;--type:0;}
+#w-9l8pfk6j .image-background-compare{background: undefined;clip: rect(0, 134.5px, 289px, 0);--type:0;}
+#w-n4zdbmhj{top:315.5px;left:113.5px;width:91px;height:auto;}
+#w-n4zdbmhj .line-container{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;}
+#w-t9sm3xwe{top:342.5px;left:0px;width:319px;height:40px;}
+#w-t9sm3xwe .text-block{background:;}
+#w-t9sm3xwe .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'SVN-Mightiest.otf', sans-serif;font-size:20px;letter-spacing:5px;line-height:2;text-align:center;--type:0;}
+#w-pbiylxe0{top:9.752853393554688px;left:-187.86789321899414px;width:155px;height:155px;}
+#w-pbiylxe0 .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;background:rgba(137, 137, 137, 1);background-clip: padding-box;}
+#w-azwkevop{top:12.750007629394531px;left:-184.85654067993164px;width:149px;height:149px;}
+#w-vw5iaqhx{width:80px;height:80px;z-index:10;position:fixed;left: calc((100% - 420px)/2 + 20px);bottom: 20px;}
+#w-pg4ud0dq{top:596px;left:-423px;width:382px;height:84px;}
+#w-u6bhn83l{top:0px;left:0px;width:382px;height:30px;}
+#w-u6bhn83l .text-block{background:;}
+#w-u6bhn83l .text-block-css{-webkit-text-stroke:0px rgba(0,0,0,1.000);border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'SVN-Mightiest.otf', sans-serif;font-size:20px;line-height:1.5;text-align:center;--type:0;}
+#w-er17bmp4{top:66.5px;left:71px;width:240px;height:auto;}
+#w-er17bmp4 .line-container{border-color:rgba(0, 0, 0, 1);border-style:dotted;border-width:1px;}
+#w-a0356azn{top:51px;left:31px;width:320px;height:33px;}
+#w-a0356azn .text-block{background:;}
+#w-a0356azn .text-block-css{-webkit-text-stroke:0px rgba(0,0,0,1.000);border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'Cormorant Upright', sans-serif;font-size:22px;line-height:1.5;text-align:center;--type:0;}
+#w-08zr1r86{top:532px;left:686px;width:180px;height:27px;}
+#w-08zr1r86 .text-block{background:;}
+#w-08zr1r86 .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Cormorant Upright', sans-serif;font-size:18px;text-align:end;--type:0;}
+#w-xjdsrgp5{top:558px;left:686px;width:180px;height:25.5px;}
+#w-xjdsrgp5 .text-block{background:;}
+#w-xjdsrgp5 .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'UTM-Cafeta.ttf', sans-serif;font-size:17px;text-align:end;text-transform:uppercase;--type:0;}
+#w-j59hkrv8{top:625px;left:686px;width:180px;height:27px;}
+#w-j59hkrv8 .text-block{background:;}
+#w-j59hkrv8 .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Cormorant Upright', sans-serif;font-size:18px;text-align:end;--type:0;}
+#w-k4vnjy9f{top:651px;left:686px;width:180px;height:25.5px;}
+#w-k4vnjy9f .text-block{background:;}
+#w-k4vnjy9f .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'UTM-Cafeta.ttf', sans-serif;font-size:17px;text-align:end;text-transform:uppercase;--type:0;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 2/13 · id section: #w-q53it7fi · .com-section · mục đích: couple-announcement · 7 element con
+---------------------------------------------------------------------- */
+#w-q53it7fi{top:0px;left:0px;position:relative;width:420px;height:448px;}
+#w-q53it7fi .section-wrapper{opacity:1;}
+#w-q53it7fi{margin-bottom: -1px;}
+#w-q53it7fi .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-n3c8cwt3{top:22.5px;left:35px;width:233px;height:auto;}
+#w-n3c8cwt3 .line-container{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;}
+#w-0hctu405{top:139px;left:-82px;perspective: 1000px;width:234px;height:auto;}
+#w-0hctu405 .line-container{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;}
+#w-0hctu405 > div{transform: rotate(90deg) perspective(1000px);}
+#w-xykbkqrm{top:17.5px;left:268px;width:144px;height:27px;}
+#w-xykbkqrm .text-block{background:;}
+#w-xykbkqrm .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'NotoSerifDisplay-SemiBold.ttf', sans-serif;font-size:18px;letter-spacing:2px;text-align:center;--type:0;}
+#w-m7ni6fwc{top:266.5px;left:35px;perspective: 1000px;width:422px;height:105px;}
+#w-m7ni6fwc .text-block{background:;}
+#w-m7ni6fwc .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'Cormorant Upright', sans-serif;font-size:35px;line-height:3;text-align:start;text-shadow:0px 4px 4px rgba(255, 255, 255, 1);--type:0;}
+#w-m7ni6fwc > div{transform: rotate(0deg) perspective(1000px);}
+#w-yffc4isu{top:355.5px;left:35px;perspective: 1000px;width:420px;height:105px;}
+#w-yffc4isu .text-block{background:;}
+#w-yffc4isu .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'Cormorant Upright', sans-serif;font-size:35px;line-height:3;text-align:start;text-shadow:0px 4px 4px rgba(255, 255, 255, 1);--type:0;}
+#w-yffc4isu > div{transform: rotate(0deg) perspective(1000px);}
+#w-ysm6s9rn{top:340.5px;left:44px;perspective: 1000px;width:420px;height:52.5px;}
+#w-ysm6s9rn .text-block{background:;}
+#w-ysm6s9rn .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'NVNFunkySignature-Regular.ttf', sans-serif;font-size:35px;text-align:start;text-shadow:0px 4px 4px rgba(255, 255, 255, 1);--type:0;}
+#w-ysm6s9rn > div{transform: rotate(0deg) perspective(1000px);}
+#w-5n79dm9x{top:270px;left:35px;width:392px;height:22.5px;}
+#w-5n79dm9x .text-block{background:;}
+#w-5n79dm9x .text-block-css{-webkit-text-stroke:0px rgba(0,0,0,1.000);border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'Crimson Pro', sans-serif;font-size:15px;letter-spacing:1px;line-height:1.5;text-align:start;--type:0;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 3/13 · id section: #w-ubtq6ntw · .com-section · mục đích: couple-photo · 4 element con
+---------------------------------------------------------------------- */
+#w-ubtq6ntw{top:0px;left:0px;position:relative;width:420px;height:361px;}
+#w-ubtq6ntw .section-wrapper{opacity:1;}
+#w-ubtq6ntw{margin-bottom: -1px;}
+#w-ubtq6ntw .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-qj312suo{top:0px;left:8px;width:405px;height:348px;}
+#w-8grm4rnu{top:0px;left:0px;width:405px;height:348px;}
+#w-8grm4rnu .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;box-shadow:0px 4px 4px 0px rgba(0,0,0,0.400);background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-i0djb3fi{top:12.5px;left:7px;width:391px;height:303px;}
+#w-i0djb3fi .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-i0djb3fi .image-background{width:391.5px;height:587.4794841735053px;top:-33px;left:-0.5px;background:center center/ cover no-repeat scroll content-box url(/assets/couple-2.jpg) border-box;--type:0;}
+#w-i0djb3fi .image-background-compare{background: undefined;clip: rect(0, 195.5px, 303px, 0);--type:0;}
+#w-7rctms59{top:323px;left:141px;width:125px;height:auto;}
+#w-7rctms59 .line-container{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 4/13 · id section: #w-bghp2fwb · .com-section · mục đích: invitation-heading · 2 element con
+---------------------------------------------------------------------- */
+#w-bghp2fwb{top:0px;left:0px;position:relative;width:420px;height:101px;}
+#w-bghp2fwb .section-wrapper{opacity:1;}
+#w-bghp2fwb{margin-bottom: -1px;}
+#w-bghp2fwb .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-1qbithzq{top:16px;left:0px;width:420px;height:50px;}
+#w-1qbithzq .text-block{background:;}
+#w-1qbithzq .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'Cormorant Upright', sans-serif;font-size:25px;letter-spacing:1px;line-height:2;text-align:center;text-transform:uppercase;--type:0;}
+#w-40fhpwfn{top:68px;left:102px;width:216px;height:auto;}
+#w-40fhpwfn .line-container{border-color:rgba(0, 0, 0, 1);border-style:outset;border-width:1px;z-index:;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 5/13 · id section: #w-90c2m1yt · .com-section · mục đích: ceremony-time · 7 element con
+---------------------------------------------------------------------- */
+#w-90c2m1yt{top:0px;left:0px;position:relative;width:420px;height:249px;display:none;}
+#w-90c2m1yt .section-wrapper{opacity:1;}
+#w-90c2m1yt{margin-bottom: -1px;}
+#w-90c2m1yt .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-1n489ub3{top:4.5px;left:32px;width:356px;height:212px;}
+#w-1n489ub3 .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;box-shadow:0px 4px 4px 2px rgba(0, 0, 0, 0.25);background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-qz3qdpb0{top:81px;left:22.5px;width:375px;height:22.5px;}
+#w-qz3qdpb0 .text-block{background:;}
+#w-qz3qdpb0 .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:15px;letter-spacing:1px;text-align:center;--type:0;}
+#w-yjlcb3gn{top:112px;left:22.5px;width:375px;height:22.5px;}
+#w-yjlcb3gn .text-block{background:;}
+#w-yjlcb3gn .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:15px;letter-spacing:1px;text-align:center;--type:0;}
+#w-uxlnltgu{top:144.5px;left:22.5px;width:375px;height:19.5px;}
+#w-uxlnltgu .text-block{background:;}
+#w-uxlnltgu .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0,0,0,0.500);font-family:'Arial', sans-serif;font-size:13px;font-style:italic;letter-spacing:1px;text-align:center;--type:0;}
+#w-gqyiaaja{top:171.5px;left:22.5px;width:375px;height:22.5px;}
+#w-gqyiaaja .text-block{background:;}
+#w-gqyiaaja .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:15px;letter-spacing:1px;text-align:center;--type:0;}
+#w-h7tx4ezc{top:25.5px;left:33px;width:354px;height:37.5px;}
+#w-h7tx4ezc .text-block{background:;}
+#w-h7tx4ezc .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'UTM-Cafeta.ttf', sans-serif;font-size:25px;text-align:center;--type:0;}
+#w-tijrneg8{top:61px;left:168.5px;width:83px;height:auto;}
+#w-tijrneg8 .line-container{border-color:rgba(83, 96, 119, 1);border-style:solid;border-width:1px;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 6/13 · id section: #w-im3pxp9o · .com-section · mục đích: wedding-details · 8 element con
+---------------------------------------------------------------------- */
+#w-im3pxp9o{top:0px;left:0px;position:relative;width:420px;height:320px;}
+#w-im3pxp9o .section-wrapper{opacity:1;}
+#w-im3pxp9o{margin-bottom: -1px;}
+#w-im3pxp9o .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-0pxu27tu{top:75.5px;left:22.5px;width:375px;height:22.5px;}
+#w-0pxu27tu .text-block{background:;}
+#w-0pxu27tu .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:15px;letter-spacing:1px;text-align:center;--type:0;}
+#w-afaknanm{top:103.5px;left:22.5px;width:375px;height:30px;}
+#w-afaknanm .text-block{background:;}
+#w-afaknanm .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:20px;letter-spacing:1px;text-align:center;--type:0;}
+#w-44z6qo7q{top:143px;left:22.5px;width:375px;height:19.5px;}
+#w-44z6qo7q .text-block{background:;}
+#w-44z6qo7q .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0,0,0,0.500);font-family:'Arial', sans-serif;font-size:13px;font-style:italic;letter-spacing:1px;text-align:center;--type:0;}
+#w-6wnismlg{top:169px;left:22.5px;width:375px;height:21px;}
+#w-6wnismlg .text-block{background:;}
+#w-6wnismlg .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:14px;letter-spacing:1px;text-align:center;--type:0;}
+#w-7ef8d17j{top:17px;left:0px;width:420px;height:37.5px;}
+#w-7ef8d17j .text-block{background:;}
+#w-7ef8d17j .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'UTM-Cafeta.ttf', sans-serif;font-size:25px;text-align:center;--type:0;}
+#w-5kxmzkjd{top:195.5px;left:5px;width:410px;height:22.5px;}
+#w-5kxmzkjd .text-block{background:;}
+#w-5kxmzkjd .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:15px;font-weight:bold;letter-spacing:1px;text-align:center;text-transform:uppercase;--type:0;}
+#w-ttfn08oi{top:266px;left:5px;width:410px;height:21px;}
+#w-ttfn08oi .text-block{background:;}
+#w-ttfn08oi .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Arial', sans-serif;font-size:14px;letter-spacing:1px;text-align:center;--type:0;}
+#w-wd0oiw7y{top:52px;left:149px;width:122px;height:auto;}
+#w-wd0oiw7y .line-container{border-color:rgba(83, 96, 119, 1);border-style:solid;border-width:1px;z-index:;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 7/13 · id section: #w-j7s4utwr · .com-section · mục đích: map-button · 2 element con
+---------------------------------------------------------------------- */
+#w-j7s4utwr{top:0px;left:0px;position:relative;width:420px;height:353px;}
+#w-j7s4utwr .section-wrapper{opacity:1;}
+#w-j7s4utwr{margin-bottom: -1px;}
+#w-j7s4utwr .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-tam1vool{top:63px;left:0px;width:421px;height:265px;}
+#w-068i77jq{top:12px;left:53.5px;width:313px;height:32px;}
+#w-068i77jq .button-css{border-color:rgba(0, 0, 0, 1);border-radius:100px;border-style:solid;border-width:1px;color:rgba(0, 0, 0, 1);filter:drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));font-family:'Crimson Pro', sans-serif;font-size:17px;letter-spacing:1px;background:rgba(255, 255, 255, 1);--type:0;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 8/13 · id section: #w-xr8n7pvd · .com-section · mục đích: calendar-widget · 1 element con
+---------------------------------------------------------------------- */
+#w-xr8n7pvd{top:0px;left:0px;position:relative;width:420px;height:366px;}
+#w-xr8n7pvd .section-wrapper{opacity:1;}
+#w-xr8n7pvd{margin-bottom: -1px;}
+#w-xr8n7pvd .section-background{background:rgba(255,255,255,0.000);--type:0;}
+/* FIX so với bản gốc (không đổi hình ảnh): bản gốc ghi
+     #w-x3qlo4n9{top:10px;left:0px;width:422px;height:346px;year : 2027month : 10heart-days : 1,9,23}
+   3 mảnh `year : 2027month : 10heart-days : 1,9,23` là dữ liệu config CŨ của WebCake bị
+   rò rỉ vào CSS (script lịch thật dùng DATE_INPUT = "29.11.2026", nên 3 giá trị này đã chết).
+   Trình duyệt âm thầm bỏ qua, PostCSS/Vite thì báo lỗi "Missed semicolon" làp build hỏng,
+   nên đã cắt bỏ. Giữ nguyên 4 khai báo hợp lệ -> render y hệt bản gốc. */
+#w-x3qlo4n9{top:10px;left:0px;width:422px;height:346px;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 9/13 · id section: #w-1nyt13tc · .com-section · mục đích: rsvp-form · 8 element con
+---------------------------------------------------------------------- */
+#w-1nyt13tc{top:0px;left:0px;position:relative;width:420px;height:457px;}
+#w-1nyt13tc .section-wrapper{opacity:1;}
+#w-1nyt13tc{margin-bottom: -1px;}
+#w-1nyt13tc .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-rvcrbrxh{top:136.5px;left:22px;width:379px;height:290px;}
+#w-rvcrbrxh form{-webkit-text-stroke:0px rgba(255, 255, 255, 1);border-radius:56px;color:rgba(0,0,0,0.400);font-size:13px;}
+#w-rvcrbrxh {}
+#w-rvcrbrxh input::placeholder, #w-rvcrbrxh .input-datetime-placeholder, #w-rvcrbrxh textarea::placeholder {
+      color:rgba(0, 0, 0, 0.4);
+    }
+#w-vx45iwpu{top:243px;left:0.5px;width:378px;height:47px;}
+#w-vx45iwpu .button-css{-webkit-text-stroke:0px rgba(255, 255, 255, 1);border-color:rgba(0, 0, 0, 1);border-radius:30px;border-style:double;border-width:4px;box-shadow:0px 4px 4px 0px rgba(0, 0, 0, 0.39);color:rgba(0, 0, 0, 1);font-size:16px;font-weight:bold;background:rgba(255, 255, 255, 1);--type:0;}
+#w-zuwe8zoz{top:59.5px;left:0.5px;width:378px;height:47px;}
+#w-zuwe8zoz .input-css{border-color:rgba(0, 0, 0, 1);border-radius:56px;border-style:double;border-width:1px;color:rgba(0,0,0,0.400);}
+#w-zuwe8zoz input{background:rgba(255, 255, 255, 1);color:rgba(0,0,0,0.400);}
+#w-og9c0zwi{top:122px;left:0.5px;width:378px;height:47px;}
+#w-og9c0zwi .input-css{border-color:rgba(0, 0, 0, 1);border-radius:56px;border-style:double;border-width:1px;color:rgba(0,0,0,0.400);}
+#w-og9c0zwi input{background:rgba(255, 255, 255, 1);color:rgba(0,0,0,0.400);}
+#w-4okcahhg{top:181px;left:0.5px;width:378px;height:47px;}
+#w-4okcahhg .select-css{border-color:rgba(0, 0, 0, 1);border-radius:56px;border-style:double;border-width:1px;color:rgba(0,0,0,0.400);}
+#w-4okcahhg select{background:rgba(255, 255, 255, 1);color:rgba(0,0,0,0.400);}
+#w-4okcahhg .chevron .icon{color:rgba(0,0,0,0.400);}
+#w-z925obrg{top:0px;left:0px;width:379px;height:47px;}
+#w-z925obrg .input-css{border-color:rgba(0, 0, 0, 1);border-radius:56px;border-style:double;border-width:1px;color:rgba(0,0,0,0.400);}
+#w-z925obrg input{background:rgba(255, 255, 255, 1);color:rgba(0,0,0,0.400);}
+#w-5bzhufjm{top:28px;left:22px;width:375px;height:49.5px;}
+#w-5bzhufjm .text-block{background:;}
+#w-5bzhufjm .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'PinyonScript-Regular.ttf', sans-serif;font-size:33px;letter-spacing:1px;text-align:center;--type:0;}
+#w-cztebelr{top:85px;left:168px;width:83px;height:auto;}
+#w-cztebelr .line-container{border-color:rgba(83, 96, 119, 1);border-style:solid;border-width:1px;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 10/13 · id section: #w-2lvco2h8 · .com-section · mục đích: gift-links · 8 element con
+---------------------------------------------------------------------- */
+#w-2lvco2h8{top:0px;left:0px;position:relative;width:420px;height:180px;}
+#w-2lvco2h8 .section-wrapper{opacity:1;}
+#w-2lvco2h8{margin-bottom: -1px;}
+#w-2lvco2h8 .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-k4iqbane{top:2.5px;left:15.5px;width:179px;height:150px;}
+#w-pjjmn8ir{top:0px;left:7.5px;width:164px;height:149px;}
+#w-pjjmn8ir .rectangle-css{border-color:rgba(229, 231, 235, 1);border-radius:10px;border-style:solid;box-shadow:3px 4px 4px 0px rgba(0, 0, 0, 0.25);transform: translateZ(0);filter:drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-rz46lrjm{top:1px;left:26.5px;width:126px;height:91px;}
+#w-rz46lrjm .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-rz46lrjm .image-background{width:126px;height:189px;top:-49px;left:0px;background:center center/ cover no-repeat scroll content-box  border-box url(/assets/envelope-closed.webp);--type:0;}
+#w-rz46lrjm .image-background-compare{background: undefined;clip: rect(0, 63px, 91px, 0);--type:0;}
+#w-3xw1sikm{top:93px;left:0px;width:179px;height:57px;}
+#w-3xw1sikm .text-block{background:;}
+#w-3xw1sikm .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Cormorant Upright', sans-serif;font-size:19px;text-align:center;text-transform:uppercase;--type:0;}
+#w-8m43yk8r{top:3.5px;left:225.5px;width:179px;height:150px;}
+#w-qv9vbb1z{top:0px;left:7.5px;width:164px;height:149px;}
+#w-qv9vbb1z .rectangle-css{border-color:rgba(229, 231, 235, 1);border-radius:10px;border-style:solid;box-shadow:3px 4px 4px 0px rgba(0, 0, 0, 0.25);transform: translateZ(0);filter:drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-hoao336k{top:1px;left:26.5px;width:126px;height:91px;}
+#w-hoao336k .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-hoao336k .image-background{width:126px;height:189px;top:-49px;left:0px;background:center center/ cover no-repeat scroll content-box  border-box url(/assets/envelope-closed.webp);--type:0;}
+#w-hoao336k .image-background-compare{background: undefined;clip: rect(0, 63px, 91px, 0);--type:0;}
+#w-pxcay859{top:93px;left:0px;width:179px;height:57px;}
+#w-pxcay859 .text-block{background:;}
+#w-pxcay859 .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'Cormorant Upright', sans-serif;font-size:19px;text-align:center;text-transform:uppercase;--type:0;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 11/13 · id section: #w-kzm77mp6 · .com-section · mục đích: gallery-images · 2 element con
+---------------------------------------------------------------------- */
+#w-kzm77mp6{top:0px;left:0px;position:relative;width:420px;height:298px;}
+#w-kzm77mp6 .section-wrapper{opacity:1;}
+#w-kzm77mp6{margin-bottom: -1px;}
+#w-kzm77mp6 .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-6yhej1sl{top:0px;left:12.5px;width:194px;height:290px;}
+#w-6yhej1sl .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-6yhej1sl .image-background{width:193.66666666666666px;height:290.5px;top:0px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/groom.jpg) border-box;--type:0;}
+#w-6yhej1sl .image-background-compare{background: undefined;clip: rect(0, 97px, 290px, 0);--type:0;}
+#w-j5c07h6f{top:0px;left:213.5px;width:194px;height:290px;}
+#w-j5c07h6f .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-j5c07h6f .image-background{width:193.66666666666666px;height:290.5px;top:0px;left:0px;background:center center/ cover no-repeat scroll content-box url(https://content.pancake.vn/web-media-263/42/81/30/9b/3e9e5b97412c70a791a996c6cc1071826fdae0d91830e04e32c65c7f-w:1024-h:1536-l:163667-t:image/jpeg.jpg) border-box;--type:0;}
+#w-j5c07h6f .image-background-compare{background: undefined;clip: rect(0, 97px, 290px, 0);--type:0;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 12/13 · id section: #w-irpujf29 · .com-section · mục đích: thank-you · 3 element con
+---------------------------------------------------------------------- */
+#w-irpujf29{top:0px;left:0px;position:relative;width:420px;height:404px;}
+#w-irpujf29 .section-wrapper{opacity:1;}
+#w-irpujf29{margin-bottom: -1px;}
+#w-irpujf29 .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-mi9zkapg{top:-1px;left:0px;width:420px;height:405px;}
+#w-mi9zkapg .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;filter:contrast(100%) grayscale(0%) hue-rotate(0deg) invert(0%) saturate(100%) sepia(0%) opacity(100%) brightness(50%) blur(0px);position:absolute;z-index:null;}
+#w-mi9zkapg .image-background{width:424.5px;height:636.75px;top:-32px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/couple-2.jpg) border-box;--type:0;}
+#w-mi9zkapg .image-background-compare{background: undefined;clip: rect(0, 210px, 405px, 0);--type:0;}
+#w-juz3up03{top:321.5px;left:22.5px;width:375px;height:34.5px;}
+#w-juz3up03 .text-block{background:;}
+#w-juz3up03 .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(255, 255, 255, 1);font-family:'PinyonScript-Regular.ttf', sans-serif;font-size:23px;letter-spacing:1px;text-align:center;--type:0;}
+#w-gr20jchq{top:231px;left:89px;width:242px;height:120px;}
+#w-gr20jchq .text-block{background:;}
+#w-gr20jchq .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(255, 255, 255, 1);font-family:'Summerfun.otf', sans-serif;font-size:40px;line-height:3;text-align:center;--type:0;}
+/* ----------------------------------------------------------------------
+-- KHU VỰC 13/13 · id section: #w-79vxed47 · .com-section · mục đích: footer · 7 element con
+---------------------------------------------------------------------- */
+#w-79vxed47{top:0px;left:0px;position:relative;width:420px;height:48px;}
+#w-79vxed47 .section-wrapper{opacity:1;}
+#w-79vxed47{margin-bottom: -1px;}
+#w-79vxed47 .section-background{background:rgba(255,255,255,0.000);--type:0;}
+#w-iwzop4o3{top:0px;left:-250px;width:670px;height:48px;}
+#w-nt7j2itd{top:15.5px;left:0px;width:660px;height:22.5px;}
+#w-nt7j2itd .text-block{background:;}
+#w-nt7j2itd .text-block-css{-webkit-text-stroke:0px rgba(0, 0, 0, 1);border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-size:15px;text-align:end;--type:0;}
+#w-kel7rhmc{top:14px;left:391px;width:25px;height:25px;}
+#w-kel7rhmc .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;transform: translateZ(0);filter:contrast(100%) grayscale(0%) hue-rotate(0deg) invert(0%) saturate(100%) sepia(0%) opacity(100%) brightness(200%) blur(0px);background:center center/ contain no-repeat scroll content-box url(https://content.pancake.vn/1/be/ad/61/25/69ccff4bf9c533a8297ad940b8f871b8bc7057593d2ec6f7d9c9066b.png) border-box;background-clip: padding-box;}
+#w-pzk6ix51{top:5.5px;left:346px;width:42px;height:42px;}
+#w-pzk6ix51 .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;background:center center/ contain no-repeat scroll content-box url(https://content.pancake.vn/web-media/36/b3/ec/ae/eb9548e74deddff898a48c5caa4791b84669476bafc00e5c1704e002-w:980-h:980-l:7525-t:image/webp.webp) border-box;background-clip: padding-box;}
+#w-o6p6mgaf{top:14px;left:317px;width:25px;height:25px;}
+#w-o6p6mgaf .rectangle-css{border-color:rgba(229, 231, 235, 1);border-style:solid;transform: translateZ(0);filter:contrast(100%) grayscale(0%) hue-rotate(0deg) invert(0%) saturate(100%) sepia(0%) opacity(100%) brightness(100%) blur(0px);background:center center/ cover no-repeat  content-box url("https://content.pancake.vn/1/08/3f/7a/e9/be9a053a77ec7cdb461246a62779525962247b7146d4dcccce9c1cfb.png") border-box;background-clip: padding-box;}
+#w-tafxd6ez{top:0px;left:244.5px;width:423px;height:auto;}
+#w-tafxd6ez .line-container{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;z-index:;}
+#w-g9uwq0t5{top:1px;left:242.5px;width:427px;height:46px;}
+#w-g9uwq0t5 .rectangle-css{border-color:rgba(229, 231, 235, 1);border-radius:6px;border-style:solid;background:rgba(80, 110, 228, 0);background-clip: padding-box;}
+#w-__popup_default__{position:fixed;width:400px;height:500px;}
+#w-__popup_default__::-webkit-scrollbar{display:none}
+#w-__popup_default__ .popup-background{background:rgba(255, 255, 255, 1);border-color:rgba(0, 0, 0, 1);border-radius:10px;border-style:solid;border-width:1px;color:rgba(69,64,64,1.000);font-size:30px;}
+#w-3hkjex1b{top:0px;left:371px;z-index:1;width:29px;height:29px;}
+#w-3hkjex1b {
+    box-shadow: ;
+    filter: ;
+  }
+#w-3hkjex1b .rectangle-css{-webkit-mask-image:url(data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSdub25lJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIHZpZXdCb3g9JzAgMCAyNCAyNCc+IDxwYXRoIGQ9J00xMy40NiwxMkwxOSwxNy41NFYxOUgxNy41NEwxMiwxMy40Nkw2LjQ2LDE5SDVWMTcuNTRMMTAuNTQsMTJMNSw2LjQ2VjVINi40NkwxMiwxMC41NEwxNy41NCw1SDE5VjYuNDZMMTMuNDYsMTJaJz48L3BhdGg+IDwvc3ZnPg==);border-color:rgba(0, 0, 0, 1);border-style:solid;z-index:1;background:rgba(0, 0, 0, 1);background-clip: padding-box;}
+#w-igy0tluk{top:444px;left:12.5px;width:375px;height:45px;}
+#w-igy0tluk .text-block{background:;}
+#w-igy0tluk .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'PinyonScript-Regular.ttf', sans-serif;font-size:30px;letter-spacing:1px;text-align:center;--type:0;}
+#w-1bubiyix{top:358.5px;left:-62.5px;width:525px;height:60px;}
+#w-1bubiyix .text-block{background:;}
+#w-1bubiyix .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;color:rgba(0, 0, 0, 1);font-family:'Cormorant Upright', sans-serif;font-size:20px;line-height:1.5;text-align:center;--type:0;}
+#w-yuvcbgge{top:4px;left:5px;width:390px;height:340px;}
+#w-yuvcbgge .image-block-css{border-color:rgba(229, 231, 235, 1);border-radius:10px 10px 0px 0px;border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-yuvcbgge .image-background{width:390px;height:585.2286049237983px;top:-37px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/hero-couple.jpg) border-box;--type:0;}
+#w-yuvcbgge .image-background-compare{background: undefined;clip: rect(0, 195px, 340px, 0);--type:0;}
+#w-srpvcq4i{position:fixed;width:400px;height:400px;}
+#w-srpvcq4i::-webkit-scrollbar{display:none}
+#w-srpvcq4i .popup-background{background:rgba(255, 255, 255, 1);border-color:rgba(0, 0, 0, 1);border-radius:10px;border-style:solid;border-width:1px;}
+#w-c50m9vir{top:0px;left:371px;z-index:1;width:29px;height:29px;}
+#w-c50m9vir {
+    box-shadow: undefined;
+    filter: undefined;
+  }
+#w-c50m9vir .rectangle-css{-webkit-mask-image:url(data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSdub25lJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIHZpZXdCb3g9JzAgMCAyNCAyNCc+IDxwYXRoIGQ9J00xMy40NiwxMkwxOSwxNy41NFYxOUgxNy41NEwxMiwxMy40Nkw2LjQ2LDE5SDVWMTcuNTRMMTAuNTQsMTJMNSw2LjQ2VjVINi40NkwxMiwxMC41NEwxNy41NCw1SDE5VjYuNDZMMTMuNDYsMTJaJz48L3BhdGg+IDwvc3ZnPg==);border-color:#E5E7EB;border-style:solid;z-index:1;background:rgb(212, 212, 212);background-clip: padding-box;}
+#w-s7z78rmj{top:237px;left:14px;width:152px;height:152px;}
+#w-s7z78rmj .rectangle-css{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-h5ou2gsw{top:243px;left:20px;width:140px;height:140px;}
+#w-h5ou2gsw .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-h5ou2gsw .image-background{width:253.439453125px;height:449px;top:-142px;left:-54.516666666666694px;background:center center/ cover no-repeat scroll content-box  border-box url(/assets/qr-vietinbank.webp);--type:0;}
+#w-h5ou2gsw .image-background-compare{background: undefined;clip: rect(0, 70px, 140px, 0);--type:0;}
+#w-grwaxngg{top:249.5px;left:180px;width:206px;height:127px;}
+#w-grwaxngg .rectangle-css{border-color:rgba(0, 0, 0, 1);border-radius:6px;border-style:solid;border-width:1px;background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-visl8dkg{top:261.25px;left:180px;width:205px;height:103.5px;}
+#w-visl8dkg .text-block{background:;}
+#w-visl8dkg .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'UTM-Cafeta.ttf', sans-serif;font-size:23px;line-height:1.5;text-align:center;text-transform:uppercase;--type:0;}
+#w-pvla7yvu{top:4px;left:5px;width:390px;height:224px;}
+#w-pvla7yvu .image-block-css{border-color:rgba(229, 231, 235, 1);border-radius:10px;border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-pvla7yvu .image-background{width:390px;height:585.2286049237983px;top:-41px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/couple-2.jpg) border-box;--type:0;}
+#w-pvla7yvu .image-background-compare{background: undefined;clip: rect(0, 195px, 224px, 0);--type:0;}
+#w-b48ilf5m{position:fixed;width:400px;height:400px;}
+#w-b48ilf5m::-webkit-scrollbar{display:none}
+#w-b48ilf5m .popup-background{background:rgba(255, 255, 255, 1);border-color:rgba(0, 0, 0, 1);border-radius:10px;border-style:solid;border-width:1px;}
+#w-r8hickjx{top:0px;left:377px;z-index:1;width:29px;height:29px;}
+#w-r8hickjx {
+    box-shadow: undefined;
+    filter: undefined;
+  }
+#w-r8hickjx .rectangle-css{-webkit-mask-image:url(data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSdub25lJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIHZpZXdCb3g9JzAgMCAyNCAyNCc+IDxwYXRoIGQ9J00xMy40NiwxMkwxOSwxNy41NFYxOUgxNy41NEwxMiwxMy40Nkw2LjQ2LDE5SDVWMTcuNTRMMTAuNTQsMTJMNSw2LjQ2VjVINi40NkwxMiwxMC41NEwxNy41NCw1SDE5VjYuNDZMMTMuNDYsMTJaJz48L3BhdGg+IDwvc3ZnPg==);border-color:#E5E7EB;border-style:solid;z-index:1;background:rgb(212, 212, 212);background-clip: padding-box;}
+#w-4oh06087{top:237px;left:14px;width:152px;height:152px;}
+#w-4oh06087 .rectangle-css{border-color:rgba(0, 0, 0, 1);border-style:solid;border-width:1px;background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-lnin8mq5{top:243px;left:20px;width:140px;height:140px;}
+#w-lnin8mq5 .image-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-lnin8mq5 .image-background{width:197.2076023391813px;height:329px;top:-72px;left:-29.516666666666694px;background:center center/ cover no-repeat scroll content-box  border-box url(/assets/qr-vietcombank.webp);--type:0;}
+#w-lnin8mq5 .image-background-compare{background: undefined;clip: rect(0, 70px, 140px, 0);--type:0;}
+#w-69y84y3g{top:249.5px;left:180px;width:206px;height:127px;}
+#w-69y84y3g .rectangle-css{border-color:rgba(0, 0, 0, 1);border-radius:6px;border-style:solid;border-width:1px;background:rgba(255, 255, 255, 1);background-clip: padding-box;}
+#w-4hekxrbu{top:261.25px;left:180px;width:205px;height:103.5px;}
+#w-4hekxrbu .text-block{background:;}
+#w-4hekxrbu .text-block-css{border-color:rgba(229, 231, 235, 1);border-style:solid;font-family:'UTM-Cafeta.ttf', sans-serif;font-size:23px;line-height:1.5;text-align:center;text-transform:uppercase;--type:0;}
+#w-sf3oc8wx{top:4px;left:5px;width:390px;height:224px;}
+#w-sf3oc8wx .image-block-css{border-color:rgba(229, 231, 235, 1);border-radius:10px;border-style:solid;border-width:0px;position:absolute;z-index:null;}
+#w-sf3oc8wx .image-background{width:390px;height:585.2286049237983px;top:-41px;left:0px;background:center center/ cover no-repeat scroll content-box url(/assets/couple-2.jpg) border-box;--type:0;}
+#w-sf3oc8wx .image-background-compare{background: undefined;clip: rect(0, 195px, 224px, 0);--type:0;}
+/* --- 3 rule helper WebCake cuối block #2 (không dùng trên trang này) --- */
+.-popup-checkout .-close, .-zoom .-close, .-popup-checkout .-back-button {
+    width: 22px;
+    height: 22px;
+  }
+.-checkout-gallery .gallery-view-item {
+    background-size: cover !important;
+  }
+.-popup-search-title {
+    font-size: undefinedpx;
+    font-weight: normal;
+    color: undefined;
+  }
+#w-oltk5ygk.animation{transform: perspective(1000px);}
+#w-oltk5ygk.animation  .image-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-r2sccdsn.animation{transform: perspective(1000px);}
+#w-r2sccdsn.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+#w-hlgaaavc.animation{transform: perspective(1000px);}
+#w-hlgaaavc.animation  .text-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+#w-guq16spj.animation{transform: perspective(1000px);}
+#w-guq16spj.animation  .text-block-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+#w-dvk50tsn.animation{transform: perspective(1000px);}
+#w-dvk50tsn.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-96kvstdo.animation{transform: perspective(1000px);}
+#w-96kvstdo.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-adxgp7e3.animation{transform: perspective(1000px);}
+#w-adxgp7e3.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-uqk6fl7m.animation{transform: perspective(1000px);}
+#w-uqk6fl7m.animation > .group-container{animation-name:slideInUp;-webkit-animation-name:slideInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-pg4ud0dq.animation{transform: perspective(1000px);}
+#w-pg4ud0dq.animation > .group-container{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-u6bhn83l.animation{transform: perspective(1000px);}
+#w-u6bhn83l.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-er17bmp4.animation{transform: perspective(1000px);}
+#w-er17bmp4.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+#w-a0356azn.animation{transform: perspective(1000px);}
+#w-a0356azn.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-08zr1r86.animation{transform: perspective(1000px);}
+#w-08zr1r86.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-xjdsrgp5.animation{transform: perspective(1000px);}
+#w-xjdsrgp5.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-j59hkrv8.animation{transform: perspective(1000px);}
+#w-j59hkrv8.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-k4vnjy9f.animation{transform: perspective(1000px);}
+#w-k4vnjy9f.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-xykbkqrm.animation{transform: perspective(1000px);}
+#w-xykbkqrm.animation  .text-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-m7ni6fwc.animation{transform: perspective(1000px);}
+#w-m7ni6fwc.animation  .text-block-css{animation-name:slideInRight;-webkit-animation-name:slideInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-yffc4isu.animation{transform: perspective(1000px);}
+#w-yffc4isu.animation  .text-block-css{animation-name:slideInRight;-webkit-animation-name:slideInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-ysm6s9rn.animation{transform: perspective(1000px);}
+#w-ysm6s9rn.animation  .text-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-5n79dm9x.animation{transform: perspective(1000px);}
+#w-5n79dm9x.animation  .text-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-qj312suo.animation{transform: perspective(1000px);}
+#w-qj312suo.animation > .group-container{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-7rctms59.animation{transform: perspective(1000px);}
+#w-7rctms59.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-qz3qdpb0.animation{transform: perspective(1000px);}
+#w-qz3qdpb0.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+#w-yjlcb3gn.animation{transform: perspective(1000px);}
+#w-yjlcb3gn.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+#w-uxlnltgu.animation{transform: perspective(1000px);}
+#w-uxlnltgu.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+#w-gqyiaaja.animation{transform: perspective(1000px);}
+#w-gqyiaaja.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:1s;-webkit-animation-duration:1s;}
+#w-tijrneg8.animation{transform: perspective(1000px);}
+#w-tijrneg8.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+#w-0pxu27tu.animation{transform: perspective(1000px);}
+#w-0pxu27tu.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-afaknanm.animation{transform: perspective(1000px);}
+#w-afaknanm.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-44z6qo7q.animation{transform: perspective(1000px);}
+#w-44z6qo7q.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-6wnismlg.animation{transform: perspective(1000px);}
+#w-6wnismlg.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-7ef8d17j.animation{transform: perspective(1000px);}
+#w-7ef8d17j.animation  .text-block-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-5kxmzkjd.animation{transform: perspective(1000px);}
+#w-5kxmzkjd.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-ttfn08oi.animation{transform: perspective(1000px);}
+#w-ttfn08oi.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:2s;-webkit-animation-duration:2s;}
+#w-wd0oiw7y.animation{transform: perspective(1000px);}
+#w-wd0oiw7y.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-068i77jq.animation{transform: perspective(1000px);}
+#w-068i77jq.animation  .button-css{animation-name:pulse;-webkit-animation-name:pulse;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-5bzhufjm.animation{transform: perspective(1000px);}
+#w-5bzhufjm.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-cztebelr.animation{transform: perspective(1000px);}
+#w-cztebelr.animation  .line-css{animation-name:zoomIn;-webkit-animation-name:zoomIn;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-6yhej1sl.animation{transform: perspective(1000px);}
+#w-6yhej1sl.animation  .image-block-css{animation-name:fadeInLeft;-webkit-animation-name:fadeInLeft;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-j5c07h6f.animation{transform: perspective(1000px);}
+#w-j5c07h6f.animation  .image-block-css{animation-name:fadeInRight;-webkit-animation-name:fadeInRight;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-juz3up03.animation{transform: perspective(1000px);}
+#w-juz3up03.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-gr20jchq.animation{transform: perspective(1000px);}
+#w-gr20jchq.animation  .text-block-css{animation-name:fadeInDown;-webkit-animation-name:fadeInDown;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:3s;-webkit-animation-duration:3s;}
+#w-1bubiyix.animation{transform: perspective(1000px);}
+#w-1bubiyix.animation  .text-block-css{animation-name:fadeInUp;-webkit-animation-name:fadeInUp;animation-delay:0s;-webkit-animation-delay:0s;animation-iteration-count:1;-webkit-animation-iteration-count:1;animation-duration:4s;-webkit-animation-duration:4s;}
+
+
+
+/* ============================================================================
+   PHẦN 5 — @font-face (10 family thực sự dùng, tất cả từ CDN)
+   Nguồn: các style block @font-face trong <head>/<body> của trang gốc.
+   Bản gốc khai báo ~40 @font-face vì thư viện font của WebCake nhét tất cả
+   font mà người dùng từng chọn vào. Ở đây chỉ giữ 8 family thật sự được dùng
+   bởi text block + 4 family Google Fonts (xem PHẦN 0).
+
+   ĐÃ BỎ CỐ Ý (không dùng ở bất kỳ text block nào, chỉ nằm trong thư viện):
+     • svn-gilroy        — 13 @font-face (~1,4 MB)
+     • svn-gilroy x      —  4 @font-face (~0,4 MB)
+     → tổng ~1,85 MB tiết kiệm được mà giao diện không đổi một pixel nào.
+     • 34 family khác (SVN-Gotham, AVO, sriracha-, Calibri, Calibri…, hihi,
+       hehe, tienghan, Playwrite*, Michelia, Beach 1/2/3, ephesis-, alexbrush-,
+       notoserifdisplay-, greatvibes-, blackmango-, vnf-shelia-, …)
+   Lưu ý: bản gốc khai báo NVNFunkySignature-Regular.ttf, Summerfun.otf và
+   UTM-Cafeta.ttf mỗi cái 2 lần (trùng lặp) — ở đây gộp còn 1 lần, giá trị
+   tuyệt đối giống nhau nên không ảnh hưởng render.
+   ============================================================================ */
+
+/* --- 1 · NotoSerifDisplay-SemiBold.ttf (trọng 600) --- */
+@font-face {
+  font-family: "NotoSerifDisplay-SemiBold.ttf";
+  src: url("https://statics.pancake.vn/web-media/27/79/2f/68/3ad52355a6d8567b2322a915a57467ba6371bc305df053f79e622542-w:0-h:0-l:428956-t:application/octet-stream.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* --- 2 · LuxuriousScript-Regular.ttf --- */
+@font-face {
+  font-family: "LuxuriousScript-Regular.ttf";
+  src: url("https://statics.pancake.vn/web-media-262/69/ac/c3/f1/233b97c7d6475ed5e8ab1cb9793e3f8dd4fd80442e7874229b21a7b7-w:0-h:0-l:377636-t:application/octet-stream.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* --- 3 · PinyonScript-Regular.ttf --- */
+@font-face {
+  font-family: "PinyonScript-Regular.ttf";
+  src: url("https://statics.pancake.vn/web-media-263/0f/81/6f/50/c0a25ed5e687570f2b43c16c1954969db6121095dcec2ad0745cdb0e-w:0-h:0-l:149257-t:font/ttf.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* --- 4 · Summerfun.otf --- */
+@font-face {
+  font-family: "Summerfun.otf";
+  src: url("https://statics.pancake.vn/web-media-263/54/76/af/2e/c4a3a4c9bc5a754517cefb1fd9f6a6bf77f2b20c9dcf0a2330b28bc3-w:0-h:0-l:51549-t:application/octet-stream.otf") format("opentype");
+  font-display: swap;
+}
+
+/* --- 5 · SVN-Mightiest.otf --- */
+@font-face {
+  font-family: "SVN-Mightiest.otf";
+  src: url("https://statics.pancake.vn/web-media-263/38/a8/63/6b/be3591beaa1faddc0f76fe23aac05f5d907411cd2b0e4652bc5ed081-w:0-h:0-l:23793-t:font/otf.otf") format("opentype");
+  font-display: swap;
+}
+
+/* --- 6 · NVNFunkySignature-Regular.ttf --- */
+@font-face {
+  font-family: "NVNFunkySignature-Regular.ttf";
+  src: url("https://statics.pancake.vn/web-media-263/12/5f/72/1a/ee8c17dc5e393683afdea8b10c63ce08cc29bd15d2bdf5a3ce3a76b6-w:0-h:0-l:121288-t:application/octet-stream.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* --- 7 · NVN-Motherland-Signature.ttf --- */
+@font-face {
+  font-family: "NVN-Motherland-Signature.ttf";
+  src: url("https://statics.pancake.vn/web-media-262/39/10/c3/45/83eead650fc5448d9594d0d107bbb42bde9bbe182052b95fb8cae6e0-w:0-h:0-l:228565-t:application/octet-stream.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* --- 8 · UTM-Cafeta.ttf --- */
+@font-face {
+  font-family: "UTM-Cafeta.ttf";
+  src: url("https://statics.pancake.vn/web-media-263/04/eb/01/7a/e19221a44fabb6fd54c6339fd43b1c25ebbe20e97f6633beed4cbc79-w:0-h:0-l:31525-t:application/octet-stream.ttf") format("truetype");
+  font-display: swap;
+}
+
+
+/* ============================================================================
+   PHẦN 6 — CÁC CLASS TÙY CHỌN (port nguyên văn từ các style block nhúng trong
+   body gốc: `.wc-bg-image`, `#music-toggle`, `.wc-cal-*`)
+   ============================================================================ */
+
+/* --- 6.1 · Nền hero cố định phía sau toàn trang ---------------------------- */
+
+.wc-bg-image {
+  position: fixed;
+  top: 0;
+  left: 50%;                 /* 👈 căn giữa theo chiều ngang */
+  transform: translateX(-50%);
+
+  width: 420px;              /* Desktop: rộng 420px */
+  height: 100%;
+
+  background-image: url('https://statics.pancake.vn/web-media/65/e2/2b/ab/52811bdc3ee1ebcfe1c7309c1d21ac6afc36430104cf3bc7aba1d35e-w:736-h:1104-l:88629-t:image/jpeg.jfif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+
+  opacity: 0.5;
+  z-index: -1;
+}
+
+/* Mobile & Tablet: full màn hình */
+@media (max-width: 1024px) {
+  .wc-bg-image {
+    left: 0;
+    transform: none;
+
+    width: 100%;
+    background-size: cover;
+  }
+}
+
+
+/* --- 6.2 · Nút bật/tắt nhạc ------------------------------------------------ */
+
+/* ====== STYLE: vị trí & hiệu ứng nút ====== */
+#music-toggle {
+  position: fixed;
+  left: 14px;   /* ghim bên trái */
+  bottom: 14px;
+  z-index: 99999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3); /* nền trắng */
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+#music-toggle:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+#music-toggle img {
+  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+
+#music-toggle.vibrating {
+  animation: wc-pulse 1.6s ease-out infinite;
+  background: rgba(255, 255, 255, 0.3); /* nền trắng khi đang rung */
+}
+
+/* Ép hiển thị đúng icon trong mọi theme */
+#music-toggle #play-icon,
+#music-toggle #pause-icon {
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+}
+
+/* Tối ưu chạm cho mobile */
+@media (hover: none) {
+  #music-toggle { bottom: 12px; left: 12px; }
+}
+
+/* 6.2.b · FIX so với bản gốc ------------------------------------------------
+   `#music-toggle.vibrating` ở trên tham chiếu `animation: wc-pulse ...` nhưng
+   @keyframes `wc-pulse` KHÔNG TỒN TẠI ở bất kỳ đâu trong trang gốc (kể cả
+   trong mirror) → animation chết, nút chỉ đổi nền chứ không "rung".
+   Ở đây ĐỊNH NGHĨA keyframe thật: xung box-shadow trắng lan ra rồi tan, khớp
+   nhịp 1.6s ease-out infinite mà bản gốc khai báo. */
+@keyframes wc-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, .55); }
+  70%  { box-shadow: 0 0 0 16px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+
+/* --- 6.3 · Lịch trong thiệp (component do script gốc dựng) ------------------ */
+
+/* 🔲 KHUNG NGOÀI: rộng 305, nền mờ 50% */
+.wc-cal-outer{
+  width:305px;
+  box-sizing:border-box;
+  margin:0 auto;
+  border:1px solid #000;
+  border-radius:4px;
+  background:rgba(255,255,255,0.5);  /* ⭐ nền mờ 50% */
+  padding:14px 20px 14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* 📝 TIÊU ĐỀ */
+.wc-cal-title{
+  font-family:"Pinyon Script", cursive;
+  font-size:25px;
+  text-align:center;
+  margin:0 0 10px;
+}
+
+.wc-cal{width:100%;}
+
+/* FRAME */
+.wc-cal-frame{
+  width:100%;
+  position:relative;
+  padding-top:6px;
+}
+
+/* 1️⃣ Gạch trên hàng thứ */
+.wc-cal-frame::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:0.5px;
+  background:#000;
+}
+
+/* HÀNG THỨ */
+.wc-cal-dow-row{
+  margin-top:6px;
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  padding-bottom:6px;
+  position:relative;
+}
+
+.wc-cal-dow-row div{
+  text-align:center;
+  font-family:"Open Sans", sans-serif;
+  font-weight:700;
+  font-size:13px;
+}
+
+/* 2️⃣ Gạch dưới hàng thứ */
+.wc-cal-dow-row::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:0.5px;
+  background:#000;
+}
+
+/* LƯỚI NGÀY */
+.wc-cal-grid{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:repeat(7, 1fr);
+  gap:8px;
+  padding-bottom:8px;
+  position:relative;
+}
+
+/* 3️⃣ Gạch cuối lịch */
+.wc-cal-grid::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:1px;
+  background:#000;
+}
+
+/* Ô ngày */
+.wc-cal-grid > div{
+  min-height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:"Open Sans", sans-serif;
+  font-size:13px;
+  position:relative;
+}
+
+.wc-cal-day-span{
+  z-index:2;
+}
+
+.wc-cal-day--sun .wc-cal-day-span,
+.wc-cal-day--selected .wc-cal-day-span{
+  font-weight:700;
+}
+
+.wc-cal-empty{
+  opacity:0;  /* ô trống không hiện */
+}
+
+/* TRÁI TIM */
+.wc-cal-heart{
+  position:absolute;
+  width:40px;
+  height:40px;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  z-index:1;
+  pointer-events:none;
+  animation:heartFlash 4s infinite ease-in-out;
+}
+
+@keyframes heartFlash{
+  0%,100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+  50%{opacity:0.3; transform:translate(-50%,-50%) scale(1.15);}
+}
+
+
+/* ============================================================================
+   PHẦN 7 — RESPONSIVE
+   Trang gốc CỐ Ý fix cứng chiều rộng 420px (thiệp cưới mobile-first) — giữ
+   nguyên hành vi này. Dưới đây chỉ thêm nền xám nhạt cho phần còn lại khi
+   xem trên desktop; cột 420px vẫn do `.pageview` / `.section-wrapper` /
+   `.section-container` canh giữa, và `.wc-bg-image` tự căn giữa nhờ
+   `left:50% + translateX(-50%)` (desktop) / `left:0 + width:100%` (≤1024px).
+   ============================================================================ */
+@media (min-width: 768px) {
+  body { background-color: #f0f0f0; }
+}

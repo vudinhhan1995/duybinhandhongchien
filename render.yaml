@@ -1,0 +1,53 @@
+# ============================================================================
+# RENDER BLUEPRINT - Static Site cho thiệp cưới (React + Vite)
+# ============================================================================
+#
+# LƯU Ý QUAN TRỌNG VỀ CÁCH RENDER ĐỌC FILE NÀY
+# ----------------------------------------------------
+# Render CHỈ đọc `render.yaml` khi bạn tạo service bằng cách chọn
+# "New > Blueprint" trong Dashboard. Render đọc file này ở gốc repo
+# (branch `main`) và tự tạo/cập nhật service theo đúng nội dung khai báo.
+#
+# Render KHÔNG đọc `render.yaml` nếu bạn tạo service thủ công qua Dashboard
+# (New > Web Service / New > Static Site). Khi đó các trường cấu hình trong
+# UI mới là nguồn sự thật, và file này bị bỏ qua hoàn toàn.
+#
+# => Nếu deploy fail trước đây vì Render đoán nhầm Python, gần như chắc chắn
+#    service đã được tạo tay qua Dashboard, không phải qua Blueprint.
+#
+# NẾU TẠO TAY QUA DASHBOARD, chỉnh trong UI các trường sau:
+#   - Root Directory  = web
+#   - Runtime         = Node
+#   - Build Command   = npm ci && npm run build
+#   - Publish Path    = dist
+#
+# LÝ DO REPO GỐC KHÔNG CÓ package.json
+# ----------------------------------------------------
+# Render dò ngôn ngữ bằng cách QUÉT FILE Ở THƯ MỤC GỐC repo
+# (package.json / requirements.txt / go.mod / Gemfile / composer.json...).
+# Ở repo này toàn bộ mã nguồn nằm trong thư mục `web/`, còn ở gốc repo
+# không có file nhận diện nào, nên Render mặc định rơi về Python và chạy
+# `pip install -r requirements.txt` -> build fail.
+#
+# File `render.yaml` bên dưới giải quyết đúng vấn đề đó: Blueprint luôn đọc
+# cấu hình khai báo tường minh, không cần dò ngôn ngữ.
+#
+# ============================================================================
+
+services:
+  - type: web
+    name: thiep-cuoi
+    # runtime: static = Render Static Site (build ra file tĩnh, phục vụ qua CDN)
+    runtime: static
+    # Root Directory để mặc định (repo root), nên build command tự cd vào web/
+    buildCommand: cd web && npm ci && npm run build
+    # Thư mục chứa kết quả build mà Render sẽ phục vụ
+    staticPublishPath: ./web/dist
+    pullRequestPreviewsEnabled: false
+    # SPA rewrite: mọi đường dẫn (vd /lich, /rsvp) đều trả về index.html
+    # để React Router tự xử lý, tránh lỗi 404 khi bấm link nội bộ hoặc F5.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    autoDeploy: true
