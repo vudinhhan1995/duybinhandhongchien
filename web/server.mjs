@@ -49,9 +49,9 @@ import { fileURLToPath } from 'node:url'
 // Thư mục chứa file server.mjs này (dùng làm phương án dự phòng cho ROOT).
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 
-// Render cấp cổng ngẫu nhiên qua biến môi trường PORT. Local thì mặc định 4173
-// để khớp cổng mà `vite preview` dùng, nên hai cách phục vụ cho cùng số cổng.
-const PORT = Number(process.env.PORT) || 4173
+// Render cấp cổng ngẫu nhiên qua biến môi trường PORT. Local thì mặc định 3000
+// để khớp cổng AI Studio.
+const PORT = Number(process.env.PORT) || 3000
 
 // 0.0.0.0 = nghe trên mọi interface. Render nối vào container qua IP nội bộ,
 // nếu chỉ bind localhost thì bên ngoài không vào được.
