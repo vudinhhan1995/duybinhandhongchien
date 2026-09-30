@@ -128,8 +128,23 @@ export default function RsvpSection({ onSuccess } = {}) {
                   <div className="button-text full-width u-select-none">
                     {status === 'sending' ? 'ĐANG GỬI...' : rsvp.submitLabel}
                   </div>
-                  <button type="submit" style={{ display: 'none' }} />
                 </div>
+                {/* LỚP BẤM THẬT — bắt buộc, KHÔNG bỏ.
+                    Bản gốc WebCake để nút submit nằm trong `.button-css` và nó là
+                    thẻ bấm được. Bản port trước đây đặt `<button type="submit">`
+                    với `display:none` còn `div.button-css` thì KHÔNG có onClick
+                    ⇒ bấm "GỬI NGAY" không hề gửi gì (chỉ gõ Enter trong ô mới
+                    submit được). Đây là `<button>` thật phủ kín hộp: trong suốt,
+                    nên 1 pixel nào cũng không đổi so với bản gốc, nhưng bấm
+                    chuột, chạm (mobile) và Tab+Enter đều hoạt động. */}
+                <button
+                  type="submit"
+                  className="p-absolute"
+                  disabled={status === 'sending'}
+                  aria-busy={status === 'sending'}
+                  aria-label={status === 'sending' ? 'ĐANG GỬI...' : rsvp.submitLabel}
+                  style={{ inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                />
               </div>
 
               {message && (

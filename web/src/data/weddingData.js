@@ -261,6 +261,11 @@ export const rsvp = {
   successMessage: 'Lời chúc của bạn đã được gửi tới Dâu Rể.',
   errorMessage: 'Gửi không thành công. Vui lòng thử lại sau.',
   offlineMessage: 'Không gửi được — vui lòng kiểm tra kết nối mạng rồi thử lại.',
+  // Riêng cho case `endpoint` rỗng (thiếu VITE_RSVP_ENDPOINT lúc build).
+  // KHÔNG dùng `errorMessage` ở đây: "gửi không thành công" khiến khách tưởng
+  // lỗi mạng rồi bấm GỬI NGAY liên tục, trong khi thực ra chưa có máy chủ nhận.
+  notConfiguredMessage:
+    'Chưa cấu hình máy chủ nhận đăng ký. Vui lòng liên hệ Dâu Rể.',
 }
 
 /* ==========================================================================

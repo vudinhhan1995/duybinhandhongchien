@@ -60,9 +60,10 @@ export function useRsvpSubmit({ onSuccess } = {}) {
         setMessage(invalid)
         return null
       }
+      // Chưa cấu hình endpoint ≠ lỗi mạng. Báo riêng để khách không bấm lại liên tục.
       if (!rsvp.endpoint) {
         setStatus('error')
-        setMessage(rsvp.errorMessage)
+        setMessage(rsvp.notConfiguredMessage)
         return null
       }
 
