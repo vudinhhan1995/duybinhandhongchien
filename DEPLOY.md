@@ -20,12 +20,12 @@ ERROR: Could not open requirements file: [Errno 2] No such file or directory: `r
 
 Render tu dong phat hien ngon ngu du an bang cach QUET CAC FILE O THU MUC GOC repo:
 
-| File Render tìm ở goc | Có trong repo nay khong |
-|---|---|
-| `package.json` | Khong |
-| `requirements.txt` | Khong |
-| `go.mod` | Khong |
-| `Gemfile` | Khong |
+| File Render tìm ở goc | Luc deploy fail | Hien tai |
+|---|---|---|
+| `package.json` | Khong | **Co** (da them de sua loi nay) |
+| `requirements.txt` | Khong | Khong |
+| `go.mod` | Khong | Khong |
+| `Gemfile` | Khong | Khong |
 
 Toan bo ma nguon React nam trong thu muc `web/`. O goc repo chi co `render.yaml`,
 `README.md`, `.gitignore` va `apps-script/` — khong co file nhan dien ngon ngu nao.
@@ -34,7 +34,7 @@ Khi khong tim thay file nao, Render **mac dinh chon Python**, build command mac
 dinh la `pip install -r requirements.txt`, va file do khong ton tai nen build
 that bai ngay.
 
-Xac nhan tren dia:
+Xac nhan luc do (truoc khi sua):
 
 ```
 root package.json:     False
@@ -44,6 +44,30 @@ root Gemfile:         False
 web/package.json:     True
 web/package-lock.json: True
 ```
+
+### Da sua xong: them `package.json` o GOC repo
+
+Goc repo hien da co `package.json` + `package-lock.json` duoc commit san:
+
+```
+thiepcuoi/
+├── package.json        <- CỔNG DÒ NGÔN NGỮ (không có dependency)
+├── package-lock.json
+└── web/
+    ├── package.json    <- dự án thật (React + Vite)
+    └── ...
+```
+
+Render quét thay goc repo, thay `package.json` -> **tu chon Node.js**, khong con
+roi ve Python nua. File o goc khong khai bao `dependencies` va khong khai bao
+`workspaces` — no chi la file wrapper, script cua no delegate xuong that:
+
+```json
+"build": "cd web && npm ci && npm run build"
+```
+
+=> Chay `npm run build` o goc repo cho ra y het ket qua build trong `web/`.
+=> Service moi tao tren Render **tu do dung Node**, khong can chinh tay gi.
 
 Hai nguyen nhan phu tiem an can luu y:
 
@@ -55,6 +79,20 @@ Hai nguyen nhan phu tiem an can luu y:
    chi them dung 1 file, nen du co chay `npm install` thi cung khong co gi de
    build. Phai push ma nguon `web/` len truoc.
 
+### QUAN TRONG — service cu da luu cung runtime Python, PUSH CODE KHONG SUA DUOC
+
+Service `srv-dau95go93c1s73d8sr5g` **da luu runtime Python vao database cua
+Render** luc tao. Day la setting da luu, khong phai cai gi Render quet lai
+moi lan deploy.
+
+**=> Push code moi KHONG doi duoc service do.** No se tiep tuc build bang
+Python va fail tiep. Bat buoc phai:
+
+1. **XOA service `srv-dau95go93c1s73d8sr5g`.**
+2. Tao lai tu dau (Cach A hoac Cach B ben duoi).
+
+Day la ly do service moi phai TAO LAI chu khong phai chi deploy lai.
+
 ---
 
 ## 2. Cach A — Tao bang Blueprint (khuyen nghi)
@@ -64,7 +102,11 @@ Day la cach duy nhat doc duoc `render.yaml`, nen it nhat phai cau hinh tay.
 **Buoc 1 — Xoa service cu bi fail**
 
 Dashboard Render > chon service `srv-dau95go93c1s73d8sr5g` > Settings > Delete.
-(Neu giu lai, service moi se lay lai config Python cu va van fail tiep.)
+
+> **Buoc nay bat buoc, khong phai thu nghiem.** Service cu da luu cung runtime
+> Python vao database Render. Push code moi khong doi duoc setting da luu do,
+> nen giu lai service cu thi no van build bang Python va fail tiep. Phai tao
+> moi service tu dau.
 
 **Buoc 2 — Tao moi bang Blueprint**
 
@@ -92,7 +134,7 @@ the nao chay nham `pip install` nua.
 
 ## 3. Cach B — Tao tay qua Dashboard
 
-Dung cach nay neu khong muon xoa service cu, hoac Blueprint khong tao duoc.
+Dung cach nay neu khong muon dung `render.yaml`, hoac Blueprint khong tao duoc.
 
 Khi Render hoi chon loai dich vu, chon **Static Site** (KHONG phai Web Service).
 Static Site dung cho file tinh, nhanh hon, va ho tro `staticPublishPath`.
@@ -101,18 +143,26 @@ Bang dien tung truong:
 
 | Truong | Gia tri |
 |---|---|
-| Runtime | Node |
-| Root Directory | `web` |
-| Build Command | `npm ci && npm run build` |
-| Publish Path | `dist` |
+| Loai dich vu | **Static Site** (KHONG phai Web Service) |
+| Root Directory | **DE TRONG** (repo root — KHONG phai `web`) |
+| Build Command | `npm run build` |
+| Publish Path | `web/dist` |
 | Node version | 20.x hoac de mac dinh |
 
-**Luong y quan trong nhat:** `Root Directory = web` la thu truong then chot.
-Nho set, Render se tim `package.json` o goc repo (noi khong co gi) va lai doan
-sai thanh Python. Set `web`, Render moi thay dung `web/package.json`.
+**Luong y quan trong nhat: `Root Directory` de TRONG, khong dat `web`.**
 
-`Publish Path = dist` (khong phai `web/dist`) vi `staticPublishPath` duoc
-hieu la duong dan tinh theo `Root Directory`.
+Ly do: o goc repo da co san `package.json` (them de sua loi Render doan sai
+ngon ngu — xem muc 1), nen Render **tu do dung Node.js** ma khong can chi tay
+gi. Build command `npm run build` chay o goc, script do tu `cd web` vao
+build that:
+
+```
+npm run build  ==  cd web && npm ci && npm run build
+```
+
+`Publish Path` cung vay phai la `web/dist` (KHONG phai `dist`), vi
+`Root Directory` de trong nen duong dan publish duoc hieu theo repo root.
+`render.yaml` cung dung cap hinh nay: `staticPublishPath: ./web/dist`.
 
 Neu Render khong co truong `routes` trong UI, them thu cong:
 
@@ -187,7 +237,11 @@ Sau khi Render bao "Live", mo duong dan Render tra ve va kiem tra lan luot:
 | Khong loi | Mo DevTools > Console, khong co loi React hoac loi 404 asset |
 
 Neu trang trang: mo DevTools > Network, tim request `/assets/index-*.js`.
-Neu file do tra 404, kiem tra lai `Root Directory` va `Publish Path`.
+Neu file do tra 404, kiem tra lai `Publish Path` (phai la `web/dist`, dung
+`Root Directory` de trong).
+
+Neu **trang trang** va log Render lai bao `pip install`, nghinh la: service
+do chua duoc tao lai. Xem lai muc 1 — service cu da luu cung runtime Python.
 
 ---
 
@@ -227,10 +281,16 @@ trong file README, anh chup man hinh, hay tin nhan.
 |---|---|---|
 | Da duoc Render doc `render.yaml` | Co | Khong |
 | So cau hinh phai nhap | 2 (repo + branch) | 5 truong |
-| Nguy co ca nham ve Runtime | Rat thap | Cao — hay quen `Root Directory` |
+| `Root Directory` | De trong (repo root) | De trong (repo root) |
+| Build Command | `cd web && npm ci && npm run build` | `npm run build` (tuong duong) |
+| Publish Path | `./web/dist` | `web/dist` |
+| Nguy co ca nham ve Runtime | Rat thap | Rat thap — `package.json` o goc repo da lo chuyen nay |
 | Khi sua cau hinh sau nay | Sua trong `render.yaml` roi commit | Phai vao Dashboard sua lai |
 | Khi doi nhanh | Xoa service, tao lai Blueprint | Sua trong UI |
 | **Khuyen nghi** | **Co** | Duong backup |
+
+Hai cach deu **khong con** lo so Render doan sai Python, vi `package.json` o
+goc repo da duoc commit san lam cong do ngon ngu (muc 1).
 
 Chon **Cach A** neu dang lam lai tu dau. Chi dung **Cach B** khi can giu nguyen
 service cu, hoac Blueprint khong tao duoc vi ly do gi.

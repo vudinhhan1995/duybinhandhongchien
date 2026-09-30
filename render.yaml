@@ -16,21 +16,27 @@
 #    service đã được tạo tay qua Dashboard, không phải qua Blueprint.
 #
 # NẾU TẠO TAY QUA DASHBOARD, chỉnh trong UI các trường sau:
-#   - Root Directory  = web
-#   - Runtime         = Node
-#   - Build Command   = npm ci && npm run build
-#   - Publish Path    = dist
+#   - Loại dịch vụ  = Static Site   (KHÔNG phải Web Service)
+#   - Root Directory = ĐỂ TRỐNG (repo root, KHÔNG phải `web`)
+#   - Build Command  = npm run build
+#   - Publish Path   = web/dist
 #
-# LÝ DO REPO GỐC KHÔNG CÓ package.json
+# CỔNG DÒ NGÔN NGỮ: file package.json Ở GỐC REPO
 # ----------------------------------------------------
 # Render dò ngôn ngữ bằng cách QUÉT FILE Ở THƯ MỤC GỐC repo
 # (package.json / requirements.txt / go.mod / Gemfile / composer.json...).
-# Ở repo này toàn bộ mã nguồn nằm trong thư mục `web/`, còn ở gốc repo
-# không có file nhận diện nào, nên Render mặc định rơi về Python và chạy
+# Toàn bộ mã nguồn của repo này nằm trong thư mục `web/`, nên nếu gốc repo
+# trống thì Render không thấy gì để dò và MẶC ĐỊNH RƠI VỀ PYTHON, rồi chạy
 # `pip install -r requirements.txt` -> build fail.
 #
-# File `render.yaml` bên dưới giải quyết đúng vấn đề đó: Blueprint luôn đọc
-# cấu hình khai báo tường minh, không cần dò ngôn ngữ.
+# Vì vậy repo có thêm `package.json` + `package-lock.json` Ở GỐC:
+#   - Chúng KHÔNG chứa dependency nào, KHÔNG phải workspace, KHÔNG build gì.
+#   - Chúng chỉ làm "cổng" để Render nhận ra đây là dự án Node.js.
+#   - Script `build` của file đó delegate xuống thật: `cd web && npm ci && npm run build`.
+#
+# => Nhờ vậy service tạo tay trên Dashboard cũng tự dò đúng Node, không cần
+#    chỉnh tay Root Directory. Còn Blueprint thì luôn đọc cấu hình tường minh
+#    bên dưới nên càng không cần dò ngôn ngữ.
 #
 # ============================================================================
 
@@ -39,7 +45,9 @@ services:
     name: thiep-cuoi
     # runtime: static = Render Static Site (build ra file tĩnh, phục vụ qua CDN)
     runtime: static
-    # Root Directory để mặc định (repo root), nên build command tự cd vào web/
+    # Root Directory để mặc định (repo root). Build command tự cd vào web/,
+    # cùng thứ script `build` của package.json gốc làm (hai cách cho ra kết quả
+    # giống hệt nhau):
     buildCommand: cd web && npm ci && npm run build
     # Thư mục chứa kết quả build mà Render sẽ phục vụ
     staticPublishPath: ./web/dist

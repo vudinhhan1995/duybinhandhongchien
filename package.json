@@ -1,0 +1,11 @@
+{
+  "name": "thiepcuoitemplace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Thiệp cưới online Duy Bình & Hồng Chiên (React + Vite). File này chỉ là cổng để Render dò ngôn ngữ.",
+  "scripts": {
+    "build": "cd web && npm ci && npm run build",
+    "start": "cd web && npm ci && npm run build",
+    "dev": "cd web && npm run dev"
+  }
+}
