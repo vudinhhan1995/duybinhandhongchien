@@ -15,11 +15,52 @@
 # => Nếu deploy fail trước đây vì Render đoán nhầm Python, gần như chắc chắn
 #    service đã được tạo tay qua Dashboard, không phải qua Blueprint.
 #
+# GHI CHÚ DEPLOY 12:47 — LỖI `vite: not found`, ĐÃ SỬA
+# ----------------------------------------------------
+# Log deploy lúc 12:47:
+#   Running 'npm run start'
+#   > thiepcuoitemplace@1.0.0 start
+#   > cd web && npm ci && npm run build
+#   added 5 packages, and audited 6 packages in 9s
+#   > thiep-cuoi-duy-binh-hong-chien@1.0.0 build
+#   > vite build
+#   sh: 1: vite: not found
+#   Exited with status 127
+#
+# Lưu ý dòng `> thiepcuoitemplace@1.0.0 start`: đó chính là package.json Ở GỐC
+# repo. Nó chứng minh service đã chạy đúng Node (lỗi đoán sai ngôn ngữ Python
+# đã sửa xong). Lần này chỉ còn thiếu `vite`.
+#
+# Render đặt `NODE_ENV=production` lúc build. Với biến đó npm coi
+# `npm ci` là cài production nên BỎ QUA `devDependencies`. Chứng cứ:
+# "added 5 packages" trong khi `web/package.json` khai 63 package.
+# 5 package đó đúng bằng react, react-dom, scheduler, loose-envify, js-tokens
+# = toàn bộ phần `dependencies`. `vite` nằm ở `devDependencies` nên không
+# được cài, nên `vite build` không tìm thấy binary (exit 127).
+#
+# ĐÃ SỬA — hai lớp, cả hai đều độc lập nhau:
+#   1. `vite` + `@vitejs/plugin-react` chuyển từ `devDependencies` sang
+#      `dependencies` trong `web/package.json`. Cách này CHẮC CHẮN đúng bất kể
+#      môi trường build có đặt `NODE_ENV=production`, `NPM_CONFIG_PRODUCTION=true`
+#      hay không. Công cụ build cần lúc deploy thì về bản chất là dependency
+#      của quá trình deploy.
+#   2. Script `build` ở package.json gốc thêm `--include=dev` — lớp phòng thủ
+#      thứ hai, phòng khi sau này có thêm package dev khác.
+#
+# Ngoài ra `start` đã đổi từ "build lại" sang `vite preview`. Render gọi
+# `npm run start` lúc RUNTIME, nên bản cũ build lại cả lần mỗi lần khởi động —
+# vừa lãng phí vừa sai bản chất (`start` phải phục vụ file đã build).
+#
 # NẾU TẠO TAY QUA DASHBOARD, chỉnh trong UI các trường sau:
 #   - Loại dịch vụ  = Static Site   (KHÔNG phải Web Service)
 #   - Root Directory = ĐỂ TRỐNG (repo root, KHÔNG phải `web`)
 #   - Build Command  = npm run build
 #   - Publish Path   = web/dist
+#
+# LƯU Ý: với Static Site chỉ `buildCommand` chạy. Script `start` KHÔNG được
+# dùng cho Static Site (Render phục vụ file tĩnh qua CDN). Script `start` chỉ
+# phục vụ trường hợp tạo **Web Service** — khi đó nó chạy `vite preview` để
+# phục vụ `web/dist` trên cổng Render cấp.
 #
 # CỔNG DÒ NGÔN NGỮ: file package.json Ở GỐC REPO
 # ----------------------------------------------------
@@ -32,7 +73,8 @@
 # Vì vậy repo có thêm `package.json` + `package-lock.json` Ở GỐC:
 #   - Chúng KHÔNG chứa dependency nào, KHÔNG phải workspace, KHÔNG build gì.
 #   - Chúng chỉ làm "cổng" để Render nhận ra đây là dự án Node.js.
-#   - Script `build` của file đó delegate xuống thật: `cd web && npm ci && npm run build`.
+#   - Script `build` của file đó delegate xuống thật:
+#     `cd web && npm ci --include=dev && npm run build`.
 #
 # => Nhờ vậy service tạo tay trên Dashboard cũng tự dò đúng Node, không cần
 #    chỉnh tay Root Directory. Còn Blueprint thì luôn đọc cấu hình tường minh
@@ -45,10 +87,10 @@ services:
     name: thiep-cuoi
     # runtime: static = Render Static Site (build ra file tĩnh, phục vụ qua CDN)
     runtime: static
-    # Root Directory để mặc định (repo root). Build command tự cd vào web/,
-    # cùng thứ script `build` của package.json gốc làm (hai cách cho ra kết quả
-    # giống hệt nhau):
-    buildCommand: cd web && npm ci && npm run build
+    # Root Directory để mặc định (repo root). Build command chỉ là `npm run build`
+    # — không còn `cd web &&` vì script build của package.json gốc đã tự
+    # delegate xuống `web/` (tự `cd web`, tự `npm ci --include=dev`, tự build).
+    buildCommand: npm run build
     # Thư mục chứa kết quả build mà Render sẽ phục vụ
     staticPublishPath: ./web/dist
     pullRequestPreviewsEnabled: false

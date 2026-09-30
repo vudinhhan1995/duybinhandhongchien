@@ -1,11 +1,123 @@
 # Huong dan deploy thiep cuoi len Render
 
-Tài liệu này giai thích vì sao lần deploy vừa rồi thất bại, và hai cách triển khai
-đúng cho repo nay.
+Tai lieu nay giai thich vi sao cac lan deploy vua roi that bai, va hai cach trien
+khai dung cho repo nay.
 
 ---
 
 ## 1. Vi sao deploy vua fail
+
+### 1a. Loi moi nhat: `vite: not found` (deploy 12:47)
+
+Log Render:
+
+```
+Running 'npm run start'
+> thiepcuoitemplace@1.0.0 start
+> cd web && npm ci && npm run build
+added 5 packages, and audited 6 packages in 9s
+> thiep-cuoi-duy-binh-hong-chien@1.0.0 build
+> vite build
+sh: 1: vite: not found
+Exited with status 127
+```
+
+Render da dung Node va `npm ci` chay duoc, nen luoi doan sai ngon ngu (1b) da
+duoc sua. Con lai mot loi moi: **Render dat `NODE_ENV=production` luc build.**
+
+**Bang chung trong log: `added 5 packages`.** Trong khi `web/package.json` khai
+63 package. Con 5 package do khong phai ngau nhien — chinh xac la:
+
+```
+react, react-dom, scheduler, loose-envify, js-tokens
+```
+
+= toan bo phan `dependencies`. `devDependencies` **bi bo qua hoan toan**. Vite
+nam o `devDependencies` nen khong duoc cai, nen `vite build` khong tim thay
+binary -> `sh: 1: vite: not found` (exit 127).
+
+Kiem chung nguyen tac: khi `NODE_ENV=production`, npm coi `npm ci` la cai
+production nen mac dinh bo qua `devDependencies`.
+
+### Da sua: chuyen vite sang `dependencies`
+
+Trong `web/package.json`, `vite` va `@vitejs/plugin-react` da chuyen tu
+`devDependencies` sang `dependencies`, va khoi `devDependencies` da bi xoa han.
+
+**Ly do khong chi them `--include=dev`:** `--include=dev` la lenh phai truyen
+khi chay `npm ci` — con dung o `dependencies` thi khong can truyen gi ca. Cach
+nay **chac chan dung bat ke** moi truong build co dat `NODE_ENV=production`,
+`NPM_CONFIG_PRODUCTION=true` hay khong. Cong cu build can luc deploy thi ve ban
+chat no la **dependency cua qua trinh deploy**, khong phai dependency phat
+trien.
+
+`web/package-lock.json` da dong bo lai (khong con `"dev": true` nao), nen
+`npm ci` khong fail.
+
+### Lop phong thu thu hai: `--include=dev`
+
+`package.json` o goc repo, script `build`:
+
+```json
+"build": "cd web && npm ci --include=dev && npm run build"
+```
+
+Hai lop nay doc lap nhau. Lop 1 (dependencies) la lop chinh; lop 2 bao ve cho
+truong hop sau nay co them package dev khac.
+
+### Da sua: `start` chang tu "build lai" sang "phuc vu"
+
+`package.json` o goc, script `start` **truoc day**:
+
+```json
+"start": "cd web && npm ci && npm run build"    <-- SAI
+```
+
+Render goi `npm run start` luc **RUNTIME** (log: `Running 'npm run start'`).
+Nen ban cu **build lai ca lan moi khoi dong** — vua lai phi, vua sai ban chat:
+`start` phai phuc vu file da build, khong phai bien file do thanh moi.
+
+**Banh sau khi sua:**
+
+```json
+"start": "cd web && npm run preview -- --host 0.0.0.0 --port ${PORT:-4173}"
+```
+
+`vite preview` dung la phuc vu thu muc `web/dist`. `${PORT:-4173}` lay port
+Render cap, fallback 4173 khi chay local.
+
+> **LUU Y KHI CHAY LOCAL TREN WINDOWS/CMD:**
+> `${PORT:-4173}` la cu phap **POSIX shell** (`sh`). Render chay Linux nen
+> binh thuong. Nhung tren Windows, npm chay script bang `cmd.exe`, nen bien
+> `${PORT:-4173}` duoc truyen nguyen van cho vite va bao loi
+> `EACCES: permission denied ${PORT:-4173}`. Neu can chay `npm run start` tren
+> may Windows, thay bang port cu the:
+> `cd web && npm run preview -- --host 0.0.0.0 --port 4173`
+> (Dung `npm run dev` de phat trien binh thuong — `start` chi de kiem tra ban
+> build.)
+
+### `start` duoc dung khi nao
+
+| Loai dich vu | Script nao chay |
+|---|---|
+| **Static Site** (khuyen nghi) | Chi `buildCommand`. KHONG dung `start`. |
+| **Web Service** | `buildCommand` luc build + `start` (= `vite preview`) luc chay |
+
+Render phuc vu file tinh qua CDN nen Static Site khong can tien trinh node nao
+sau khi build xong.
+
+### Kiem chung bang chung (chay tai may, da PASS)
+
+| Kiem tra | Ket qua |
+|---|---|
+| `NODE_ENV=production` + `npm run build` o goc | `added 63 packages` (truoc la 5), `vite build` chay duoc, `built in 904ms` |
+| `NODE_ENV=production` + `npm ci` (khong co `--include=dev`) | `added 63 packages`, `node_modules/.bin/vite` ton tai — lop 1 hoat dong doc lap |
+| `npm ci` trong `web/` | PASS, khong loi "lock file out of sync" |
+| `npm run build` trong `web/` | PASS, 51 modules, `built in 762ms` |
+| `vite preview` tren port 4173 | HTTP 200, `<div id="root">` co trong HTML |
+| `vite preview` tren port 5123 | HTTP 200, `<div id="root">` — co hoi port dynamic |
+
+### 1b. Loi truoc do: Render doan sai ngon ngu
 
 Log Render:
 
@@ -63,11 +175,13 @@ roi ve Python nua. File o goc khong khai bao `dependencies` va khong khai bao
 `workspaces` — no chi la file wrapper, script cua no delegate xuong that:
 
 ```json
-"build": "cd web && npm ci && npm run build"
+"build": "cd web && npm ci --include=dev && npm run build"
 ```
 
 => Chay `npm run build` o goc repo cho ra y het ket qua build trong `web/`.
 => Service moi tao tren Render **tu do dung Node**, khong can chinh tay gi.
+=> Render Static Site chi can dat Build Command = `npm run build` (khong can
+   `cd web &&` nua, script goc da tu delegate).
 
 Hai nguyen nhan phu tiem an can luu y:
 
@@ -79,34 +193,72 @@ Hai nguyen nhan phu tiem an can luu y:
    chi them dung 1 file, nen du co chay `npm install` thi cung khong co gi de
    build. Phai push ma nguon `web/` len truoc.
 
-### QUAN TRONG — service cu da luu cung runtime Python, PUSH CODE KHONG SUA DUOC
+### QUAN TRONG — service cu KHONG can xoa lai
 
-Service `srv-dau95go93c1s73d8sr5g` **da luu runtime Python vao database cua
+> **Cap nhat sau deploy 12:47: KHONG con dung phan "xoa service" ben duoi.**
+> Log deploy 12:47 da chung minh service hien tai **da chay dung Node**:
+>
+> ```
+> > thiepcuoitemplace@1.0.0 start
+> > cd web && npm ci && npm run build
+> ```
+>
+> `thiepcuoitemplace` chinh la ten trong `package.json` o GOC repo, va
+> `cd web && npm ci` chinh xac la script cua no. Nghia la loi doan sai ngon ngu
+> (Python) **da duoc sua xong**. Service dang dung, chi con 1 loi rieng: thieu
+> `vite` (muc 1a).
+>
+> **=> Bay gio chi can bam Manual Deploy. KHONG xoa service, KHONG tao lai.**
+
+Phan duoi giu lai lam tham khao cho truong hop ban muon tao service moi tu dau.
+
+### Tham khao — service co the da duoc tao tay qua Dashboard
+
+Service `srv-dau95go93c1s73d8sr5g` **da tung luu runtime Python vao database cua
 Render** luc tao. Day la setting da luu, khong phai cai gi Render quet lai
-moi lan deploy.
+moi lan deploy. Neu ban gap `pip install` trong log, nghia la service do chua
+duoc sua config, khi do phai:
 
-**=> Push code moi KHONG doi duoc service do.** No se tiep tuc build bang
-Python va fail tiep. Bat buoc phai:
+1. **Sua lai cau hinh trong Dashboard** (Settings > Environment > Runtime), hoac
+2. **Xoa service** va tao lai tu dau (Cach A hoac Cach B ben duoi).
 
-1. **XOA service `srv-dau95go93c1s73d8sr5g`.**
-2. Tao lai tu dau (Cach A hoac Cach B ben duoi).
+### Kiem tra service cua ban la Static Site hay Web Service
 
-Day la ly do service moi phai TAO LAI chu khong phai chi deploy lai.
+Log deploy 12:47 co dong `Running 'npm run start'`. **Render Static Site KHONG
+chay `start`** — no chi chay `buildCommand` roi phuc vu file qua CDN. Vay dong
+do nghia la service cua ban **da duoc cau hinh chay `npm run start`**, dung
+Web Service (hoac start command bi dat tay).
+
+| Service type | Build phase | Runtime | `start` co dung khong? |
+|---|---|---|---|
+| **Static Site** | `npm run build` | Render phuc vu `web/dist` qua CDN | **Khong** |
+| **Web Service** | `npm run build` | `npm run start` = `vite preview` | **Co** |
+
+Cach kiem tra: Dashboard > chon service > Settings, xem dong **Type**. Hoac xem
+Render co hien thi dong "Start Command" khong — chi Web Service moi co.
+
+Neu la **Web Service**: `start` moi chay, va `vite preview` la dung thu can
+phuc vu. Nhớ phai dat **Health Check Path** = `/` neu Render yeu cau.
+
+Neu la **Static Site**: chi `buildCommand` chay, va `staticPublishPath` phai
+khop `web/dist`.
 
 ---
 
 ## 2. Cach A — Tao bang Blueprint (khuyen nghi)
 
+> **CHI LAM MUC NAY NEU BAN MUON TAO SERVICE MOI.** Service hien tai da chay
+> dung Node roi — xem muc 1. Neu chi can deploy lai, bam **Manual Deploy** la
+> xong, khong can tao lai gi ca.
+
 Day la cach duy nhat doc duoc `render.yaml`, nen it nhat phai cau hinh tay.
 
-**Buoc 1 — Xoa service cu bi fail**
+**Buoc 1 — Xoa service cu bi fail (chi khi tao moi)**
 
 Dashboard Render > chon service `srv-dau95go93c1s73d8sr5g` > Settings > Delete.
 
-> **Buoc nay bat buoc, khong phai thu nghiem.** Service cu da luu cung runtime
-> Python vao database Render. Push code moi khong doi duoc setting da luu do,
-> nen giu lai service cu thi no van build bang Python va fail tiep. Phai tao
-> moi service tu dau.
+> Chi can buoc nay khi ban thuc su tao lai service moi va service cu dang
+> config sai runtime. Khong xoa service dang chay dung.
 
 **Buoc 2 — Tao moi bang Blueprint**
 
@@ -117,7 +269,7 @@ Dashboard Render > chon service `srv-dau95go93c1s73d8sr5g` > Settings > Delete.
 5. Render hien thi preview cau hinh doc tu `render.yaml` — kiem tra lai:
    - Name: `thiep-cuoi`
    - Runtime: `static`
-   - Build Command: `cd web && npm ci && npm run build`
+   - Build Command: `npm run build`
    - Publish Path: `./web/dist`
 6. Bam **Apply** / **Create**.
 
@@ -157,7 +309,7 @@ gi. Build command `npm run build` chay o goc, script do tu `cd web` vao
 build that:
 
 ```
-npm run build  ==  cd web && npm ci && npm run build
+npm run build  ==  cd web && npm ci --include=dev && npm run build
 ```
 
 `Publish Path` cung vay phai la `web/dist` (KHONG phai `dist`), vi
@@ -282,7 +434,7 @@ trong file README, anh chup man hinh, hay tin nhan.
 | Da duoc Render doc `render.yaml` | Co | Khong |
 | So cau hinh phai nhap | 2 (repo + branch) | 5 truong |
 | `Root Directory` | De trong (repo root) | De trong (repo root) |
-| Build Command | `cd web && npm ci && npm run build` | `npm run build` (tuong duong) |
+| Build Command | `npm run build` | `npm run build` |
 | Publish Path | `./web/dist` | `web/dist` |
 | Nguy co ca nham ve Runtime | Rat thap | Rat thap — `package.json` o goc repo da lo chuyen nay |
 | Khi sua cau hinh sau nay | Sua trong `render.yaml` roi commit | Phai vao Dashboard sua lai |
