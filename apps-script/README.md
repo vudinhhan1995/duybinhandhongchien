@@ -49,11 +49,29 @@ Lưu ý: với `mode: 'no-cors'`, phía React **không đọc được** phản 
 1. Mở trình duyệt, vào <https://sheets.google.com> và đăng nhập tài khoản Google của bạn.
 2. Bấm nút trống màu xanh (+) ở góc trên bên trái để tạo spreadsheet mới.
 3. Đặt tên file cho dễ nhớ, ví dụ: `Thiep Cuoi - Loi chuc` (Google Sheets chưa cho đổi tên file ngay khi tạo — đổi tên sau cũng được, không quan trọng).
-4. Để nguyên tab mặc định `Sheet1`, không cần xoá hay đổi tên. Script sẽ tự tạo tab `Lời chúc & Xác nhận`.
+4. Đặt tên tab thành `DUYBINH&HONGCHIEN` — đúng tên như file thật (xem mục ngay bên dưới). Script sẽ tự tạo tab này nếu chưa có.
 
 > Không dùng lại sheet cũ có ID `11DzmjfIMBGYYFBQYHymWIvORA8EYAAmdM7QTTTAThmU`. Hãy dùng file có ID ở Phần C, hoặc tạo sheet mới hoàn toàn như hướng dẫn này.
 
 Sau khi tạo xong, sang **Phần C** để lấy ID và điền vào `Code.gs`.
+
+### Cấu trúc file Sheets thật (đã đối chiếu)
+
+File Sheets của thiệp cưới (`1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E`) **đã có sẵn từ trước**, do chủ thiệp tạo tay. `Code.gs` bám đúng theo file đó:
+
+| | Nội dung |
+| --- | --- |
+| Tên tab | `DUYBINH&HONGCHIEN` (hằng số `SHEET_NAME` trong `Code.gs`) |
+| Số cột | **5** (hằng số `HEADER_ROW` trong `Code.gs`) |
+| Tiêu đề cột | Viết **IN HOA** tiếng Việt, khớp tuyệt đối với file (kể cả chính tả `GỞI` thiếu dấu huyền) |
+| Màu header | Nền đỏ `#aa0000`, chữ trắng `#ffffff`, in đậm, canh giữa |
+
+Script **ghi nối tiếp** vào tab này: mỗi lượt gửi form thêm 1 dòng ngay dưới dòng cuối cùng đang có. Vì tab đã có sẵn dữ liệu cũ nên những lời chúc đó **được giữ nguyên**.
+
+Hai điều rất quan trọng:
+
+- **Đừng đổi tên tab trong Sheets mà không sửa `SHEET_NAME`.** `getSheet_()` tìm tab bằng `getSheetByName(SHEET_NAME)`; nếu không tìm thấy nó sẽ `insertSheet` ra một tab **mới rỗng**, và mọi lời chúc mới sẽ nằm rời rạc khỏi bảng cũ.
+- **Hàng tiêu đề không bị ghi đè.** `ensureHeader_()` chỉ ghi tiêu đề khi tab còn trống hoàn toàn, nên chạy `setupSheet()` trên tab đã có dữ liệu là an toàn — hàng tiêu đề tiếng Việt in hoa sẵn có được giữ nguyên.
 
 ---
 
@@ -142,7 +160,7 @@ Nếu dùng file Sheets khác (ví dụ bản sao lưu, hoặc chạy thử vớ
    - Bấm **Advanced** (Nâng cao)
    - Bấm **Go to <tên dự án>** (mở bằng Google Apps Script)
    - Bấm **Allow** (Cho phép) để cấp quyền ghi vào Sheets
-4. Khi chạy xong, quay lại Google Sheets: bạn sẽ thấy tab mới tên **"Lời chúc & Xác nhận"** đã được tạo, có hàng tiêu đề in đậm nền xanh, cột đã rộng vừa, và dòng 1 đã được khoá khi cuộn.
+4. Khi chạy xong, quay lại Google Sheets: tab **`DUYBINH&HONGCHIEN`** sẽ có hàng tiêu đề 5 cột viết IN HOA, nền đỏ chữ trắng, cột đã rộng vừa, và dòng 1 đã được khoá khi cuộn. Script **không tạo tab mới** — nó ghi vào đúng tab đó.
 
 Nếu thấy thông báo lỗi kiểu "Không tìm thấy tệp" hoặc "Requested entity was not found", gần như chắc chắn `SHEET_ID` trong `Code.gs` sai — kiểm tra lại Phần C.
 
@@ -186,12 +204,13 @@ Có thể phân biệt: URL chứa đoạn `/dev` hoặc `/dev/` giữa chuỗi 
 2. Bạn phải thấy nội dung JSON trông như sau:
 
    ```json
-   {"ok": true, "status": "ready", "sheet": "Lời chúc & Xác nhận", "rows": 1}
+   {"ok": true, "status": "ready", "sheet": "DUYBINH&HONGCHIEN", "rows": 4}
    ```
 
    - `ok: true` — web app đang chạy tốt.
    - `status: ready` — server đã sẵn sàng nhận POST.
-   - `rows: 1` — hiện có 1 dòng (dòng tiêu đề).
+   - `sheet` — tên tab đang ghi vào. Phải là `DUYBINH&HONGCHIEN`; nếu thấy tên khác thì `SHEET_NAME` trong `Code.gs` đang lệch với file thật.
+   - `rows` — số dòng đang có trong tab. Với file thật thì `rows: 4` = 1 dòng tiêu đề + 3 lời chúc cũ sẵn có. Sau mỗi lượt gửi form, con số này tăng thêm 1.
 
    Nếu thấy `ok: false`, đọc phần `error` trong JSON — thường là do `SHEET_ID` sai hoặc chưa chạy `setupSheet()`.
 3. Test thử việc gửi dữ liệu (không bắt buộc, nhưng nên làm để chắc chắn mọi thứ hoạt động trước khi lên website). Mở DevTools (F12) trên bất kỳ trang nào, vào tab **Console**, dán và Enter:
@@ -212,7 +231,7 @@ Có thể phân biệt: URL chứa đoạn `/dev` hoặc `/dev/` giữa chuỗi 
    }).then(() => console.log('da gui'));
    ```
 
-4. Quay lại Google Sheets: tab "Lời chúc & Xác nhận" phải có thêm 1 dòng mới.
+4. Quay lại Google Sheets: tab `DUYBINH&HONGCHIEN` phải có thêm 1 dòng mới, nằm ngay dưới dữ liệu cũ. Chỉ 5 cột được ghi — `source` và `device` trong payload ở trên vẫn được script đọc để kiểm tra spam nhưng **không lưu ra sheet**, vì file đích không có 2 cột đó.
 5. Dán URL `/exec` vào file `.env` của dự án React (tạo file này ở thư mục gốc dự án nếu chưa có):
 
    ```
@@ -225,17 +244,28 @@ Có thể phân biệt: URL chứa đoạn `/dev` hoặc `/dev/` giữa chuỗi 
 
 ## Phần G — Cấu trúc bảng dữ liệu
 
-Mỗi lượt gửi form tạo thêm đúng 1 dòng, với các cột:
+Mỗi lượt gửi form tạo thêm đúng 1 dòng trong tab `DUYBINH&HONGCHIEN`, với **5 cột** khớp đúng với file Sheets thật:
 
-| Cột | Nội dung | Ví dụ |
+| Cột | Tiêu đề trong Sheets | Nội dung | Ví dụ |
+| --- | --- | --- | --- |
+| A | `THỜI GIAN` | Thời điểm khách bấm nút, theo múi giờ `Asia/Ho_Chi_Minh` | 30/09/2026 10:24:31 |
+| B | `TÊN CỦA BẠN LÀ?` | Họ tên khách nhập vào form (tối đa 200 ký tự) | Nguyễn Thị Lan |
+| C | `BẠN LÀ GÌ CỦA DÂU RỂ NHỈ?` | Quan hệ khách tự khai (tối đa 200 ký tự, có thể để trống) | Bạn thân cô dâu |
+| D | `GỞI LỜI CHÚC ĐẾN DÂU RỂ NHÉ!` | Nội dung lời chúc (tối đa 2000 ký tự, có thể để trống) | Mừng hai bạn trăm năm hạnh phúc |
+| E | `BẠN CÓ THAM DỰ KHÔNG?` | Chỉ có 2 giá trị: `Có Thể Tham Dự` hoặc `Không Thể Tham Dự` | Có Thể Tham Dự |
+
+> Cột D ghi `GỞI` (thiếu dấu huyền) là **cố ý** — giữ nguyên chính tả của file Sheets thật để khớp tuyệt đối. Đừng tự sửa thành `GỞI LỜI CHÚC`.
+
+### Trường nhận vào nhưng không ghi ra sheet
+
+Form gửi lên 7 trường, nhưng file đích chỉ có 5 cột. Hai trường sau **được đọc** từ payload (hữu ích khi cần điều tra spam) nhưng **không ghi xuống sheet**:
+
+| Trường payload | Nội dung | Vì sao không ghi |
 | --- | --- | --- |
-| Thời gian gửi | Thời điểm khách bấm nút, theo múi giờ `Asia/Ho_Chi_Minh` | 30/09/2026 10:24:31 |
-| Tên khách mời | Họ tên khách nhập vào form (tối đa 200 ký tự) | Nguyễn Thị Lan |
-| Quan hệ với Dâu Rể | Quan hệ khách tự khai (tối đa 200 ký tự, có thể để trống) | Bạn thân cô dâu |
-| Lời chúc | Nội dung lời chúc (tối đa 2000 ký tự, có thể để trống) | Mừng hai bạn trăm năm hạnh phúc |
-| Có tham dự không | Chỉ có 2 giá trị: `Có Thể Tham Dự` hoặc `Không Thể Tham Dự` | Có Thể Tham Dự |
-| Nguồn truy cập | URL trang mà khách đang xem | https://ten-domain/thiep-cuoi |
-| Thiết bị | User agent rút gọn, tiện khi cần thống kê | Chrome / Windows |
+| `source` | URL trang mà khách đang xem | File thật không có cột này |
+| `device` | User agent rút gọn | File thật không có cột này |
+
+Nếu sau này muốn lưu 2 trường đó, phải **thêm cột** vào file Sheets trước, rồi mới thêm chúng vào cuối `HEADER_ROW` và vào mảng `row` trong `doPost()` — theo đúng thứ tự. Bỏ qua bước thêm cột thì dữ liệu sẽ lệch cột.
 
 Ghi chú về hai giá trị cố định ở cột "Có tham dự không":
 
@@ -244,7 +274,7 @@ Ghi chú về hai giá trị cố định ở cột "Có tham dự không":
 
 Bất kỳ giá trị nào khác đều bị từ chối với `ok: false` — cố tình làm vậy để bảng không bị lẫn lộn dữ liệu rác.
 
-Cột "Thời gian gửi" dùng định dạng ngày giờ của Sheets nên bạn có thể sort, lọc, hoặc tính tổng số lời chúc theo ngày.
+Cột A (`THỜI GIAN`) dùng định dạng ngày giờ của Sheets nên bạn có thể sort, lọc, hoặc tính tổng số lời chúc theo ngày.
 
 ---
 

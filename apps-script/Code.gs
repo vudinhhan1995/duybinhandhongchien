@@ -78,18 +78,34 @@
  */
 var SHEET_ID = '1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E';
 
-/** Tên tab (sheet tab) sẽ ghi dữ liệu. Sẽ tự tạo nếu chưa có. */
-var SHEET_NAME = 'Lời chúc & Xác nhận';
+/**
+ * Tên tab (sheet tab) sẽ ghi dữ liệu. Sẽ tự tạo nếu chưa có.
+ *
+ * ĐÃ ĐỔI theo file Sheets thật: tab đầu tiên tên là 'DUYBINH&HONGCHIEN' và
+ * ĐÃ CÓ SẴN DỮ LIỆU (3 dòng lời chúc cũ). Nếu để tên khác, getSheet_() sẽ
+ * `insertSheet` ra một tab MỚI rỗng và dữ liệu sẽ nằm rời rạc khỏi bảng cũ.
+ *
+ * Muốn ghi vào tab khác thì đổi tên ở đây, nhớ sửa cả giá trị trong
+ * `getSheet_()` cho khớp.
+ */
+var SHEET_NAME = 'DUYBINH&HONGCHIEN';
 
-/** Hàng tiêu đề cột — thứ tự này phải khớp với thứ tự dữ liệu ghi xuống. */
+/**
+ * Hàng tiêu đề cột — thứ tự này phải khớp với thứ tự dữ liệu ghi xuống.
+ *
+ * ĐÃ ĐỐI CHIẾU VỚI FILE SHEETS THẬT (ID 1WN6uaF4...): file có sẵn 5 cột do
+ * chủ thiệp tạo tay từ trước. Danh sách dưới đây bám theo ĐÚNG 5 cột đó,
+ * kể cả chính tả lỗi "GỞI" (thiếu dấu huyền) — giữ nguyên để khớp tuyệt đối
+ * với file đang có, tránh tạo thêm cột thừa làm bảng lệch.
+ *
+ * Cột F, G, H trong file là cột trống, không thuộc form → không ghi.
+ */
 var HEADER_ROW = [
-  'Thời gian gửi',
-  'Tên khách mời',
-  'Quan hệ với Dâu Rể',
-  'Lời chúc',
-  'Có tham dự không',
-  'Nguồn truy cập',
-  'Thiết bị'
+  'THỜI GIAN',
+  'TÊN CỦA BẠN LÀ?',
+  'BẠN LÀ GÌ CỦA DÂU RỂ NHỈ?',
+  'GỞI LỜI CHÚC ĐẾN DÂU RỂ NHÉ!',
+  'BẠN CÓ THAM DỰ KHÔNG?'
 ];
 
 /** Thời gian tối đa chờ giành LockService, tính bằng mili-giây (30 giây). */
@@ -209,14 +225,16 @@ function doPost(e) {
     var sheet = getSheet_();
     ensureHeader_(sheet);
 
+    // ĐÚNG 5 CỘT, khớp thứ tự HEADER_ROW và khớp file Sheets thật:
+    //   A THỜI GIAN | B TÊN | C QUAN HỆ | D LỜI CHÚC | E CÓ THAM DỰ KHÔNG
+    // `source` và `device` vẫn được đọc từ payload (hữu ích khi cần điều tra
+    // spam) nhưng KHÔNG ghi ra sheet — file đích không có 2 cột đó.
     var row = [
-      new Date(),  // cột "Thời gian gửi" — Apps Script tự định dạng theo locale
+      new Date(),  // Apps Script tự định dạng theo locale của file
       guest,
       relation,
       wish,
-      attending,
-      source,
-      device
+      attending
     ];
 
     // appendRow tự ghi vào dòng trống kế tiếp, không cần biết lastRow.
@@ -510,15 +528,16 @@ function setupSheet() {
 
   var lastCol = HEADER_ROW.length;
 
-  // Header: in đậm, nền xám nhạt, canh giữa.
+  // Header: in đậm, nền đỏ, chữ trắng — KHỚP với file Sheets thật (nền đỏ
+  // #a00, chữ trắng). Không ép lại màu nếu người dùng đã tự trang trí.
   sheet.getRange(1, 1, 1, lastCol)
     .setFontWeight('bold')
     .setHorizontalAlignment('center')
-    .setBackground('#e8eaf6')
-    .setFontColor('#1a237e');
+    .setBackground('#aa0000')
+    .setFontColor('#ffffff');
 
-  // Độ rộng cột vừa đủ để đọc, cột "Lời chúc" rộng nhất.
-  var widths = [150, 200, 180, 380, 160, 220, 180];
+  // Độ rộng cột — đúng 5 cột, cột "GỞI LỜI CHÚC" rộng nhất.
+  var widths = [150, 200, 180, 380, 200];
   for (var c = 0; c < lastCol; c++) {
     sheet.setColumnWidth(c + 1, widths[c] || 150);
   }
