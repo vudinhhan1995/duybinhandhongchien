@@ -42,14 +42,18 @@ Lưu ý: với `mode: 'no-cors'`, phía React **không đọc được** phản 
 
 ---
 
-## Phần A — Tạo file Sheets mới
+## Phần A — File Sheets đích
+
+> **Thường bạn không cần làm phần này.** File Sheets của thiệp cưới đã tồn tại sẵn với ID `1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E`, và `Code.gs` đã điền ID đó (xem Phần C). Chỉ đọc phần này nếu bạn muốn tạo file Sheets mới hoàn toàn.
 
 1. Mở trình duyệt, vào <https://sheets.google.com> và đăng nhập tài khoản Google của bạn.
 2. Bấm nút trống màu xanh (+) ở góc trên bên trái để tạo spreadsheet mới.
 3. Đặt tên file cho dễ nhớ, ví dụ: `Thiep Cuoi - Loi chuc` (Google Sheets chưa cho đổi tên file ngay khi tạo — đổi tên sau cũng được, không quan trọng).
 4. Để nguyên tab mặc định `Sheet1`, không cần xoá hay đổi tên. Script sẽ tự tạo tab `Lời chúc & Xác nhận`.
 
-> Không dùng lại sheet cũ có ID `11DzmjfIMBGYYFBQYHymWIvORA8EYAAmdM7QTTTAThmU`. Hãy tạo sheet mới hoàn toàn như hướng dẫn này.
+> Không dùng lại sheet cũ có ID `11DzmjfIMBGYYFBQYHymWIvORA8EYAAmdM7QTTTAThmU`. Hãy dùng file có ID ở Phần C, hoặc tạo sheet mới hoàn toàn như hướng dẫn này.
+
+Sau khi tạo xong, sang **Phần C** để lấy ID và điền vào `Code.gs`.
 
 ---
 
@@ -79,35 +83,54 @@ Ngược lại, scope hẹp hơn là `https://www.googleapis.com/auth/spreadshee
 
 ---
 
-## Phần C — Lấy SHEET_ID và dán vào Code.gs
+## Phần C — SHEET_ID (đã điền sẵn, không cần làm gì)
 
-1. Quay lại tab Google Sheets (file vừa tạo).
-2. Nhìn vào thanh địa chỉ trình duyệt, URL có dạng:
+**Bỏ qua phần này nếu bạn dùng đúng file Sheets của thiệp cưới.** `SHEET_ID` đã được điền sẵn trong `Code.gs`:
+
+```js
+var SHEET_ID = '1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E';
+```
+
+Đó là file Sheets thật do chủ thiệp cưới tạo, tại:
+
+```
+https://docs.google.com/spreadsheets/d/1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E/edit
+```
+
+Nên khi copy `Code.gs` vào trình soạn thảo, **không phải tự dán ID nữa** — dán nguyên file là chạy được. Lưu (Ctrl+S / Cmd+S) rồi chuyển sang Phần D.
+
+### Chỉ khi bạn muốn dùng file Sheets khác
+
+Nếu dùng file Sheets khác (ví dụ bản sao lưu, hoặc chạy thử với sheet riêng), làm như sau:
+
+1. Mở file Sheets cần dùng, nhìn vào thanh địa chỉ trình duyệt, URL có dạng:
 
    ```
    https://docs.google.com/spreadsheets/d/1AbCdEfGhIjKlMnOpQrStUvWxYz/edit#gid=0
    ```
 
-3. Phần ID chính là chuỗi nằm giữa `/d/` và `/edit`:
+2. Phần ID chính là chuỗi nằm giữa `/d/` và `/edit`:
 
    ```
    1AbCdEfGhIjKlMnOpQrStUvWxYz
    ```
 
    (Bỏ qua cả `#gid=0` ở cuối — đó không phải ID.)
-4. Quay lại trình soạn thảo Apps Script, tìm dòng hằng số trong `Code.gs`:
+3. Quay lại trình soạn thảo Apps Script, tìm dòng hằng số trong `Code.gs` (khoảng dòng 79):
 
    ```js
-   var SHEET_ID = '';
+   var SHEET_ID = '1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E';
    ```
 
-   Dán ID vào giữa hai dấu nháy:
+   Thay chuỗi bên trong hai dấu nháy bằng ID của file bạn:
 
    ```js
    var SHEET_ID = '1AbCdEfGhIjKlMnOpQrStUvWxYz';
    ```
 
-5. Lưu lại (Ctrl+S / Cmd+S).
+4. Lưu lại (Ctrl+S / Cmd+S).
+
+> Tài khoản chạy script phải có quyền **Editor** với file Sheets mới, nếu không `setupSheet()` sẽ báo lỗi quyền truy cập.
 
 ---
 
@@ -121,7 +144,7 @@ Ngược lại, scope hẹp hơn là `https://www.googleapis.com/auth/spreadshee
    - Bấm **Allow** (Cho phép) để cấp quyền ghi vào Sheets
 4. Khi chạy xong, quay lại Google Sheets: bạn sẽ thấy tab mới tên **"Lời chúc & Xác nhận"** đã được tạo, có hàng tiêu đề in đậm nền xanh, cột đã rộng vừa, và dòng 1 đã được khoá khi cuộn.
 
-Nếu thấy thông báo lỗi kiểu "Không tìm thấy tệp" hoặc "Requested entity was not found", gần như chắc chắn bạn dán sai SHEET_ID — kiểm tra lại Phần C.
+Nếu thấy thông báo lỗi kiểu "Không tìm thấy tệp" hoặc "Requested entity was not found", gần như chắc chắn `SHEET_ID` trong `Code.gs` sai — kiểm tra lại Phần C.
 
 ---
 
@@ -170,7 +193,7 @@ Có thể phân biệt: URL chứa đoạn `/dev` hoặc `/dev/` giữa chuỗi 
    - `status: ready` — server đã sẵn sàng nhận POST.
    - `rows: 1` — hiện có 1 dòng (dòng tiêu đề).
 
-   Nếu thấy `ok: false`, đọc phần `error` trong JSON — thường là do chưa dán SHEET_ID hoặc chưa chạy `setupSheet()`.
+   Nếu thấy `ok: false`, đọc phần `error` trong JSON — thường là do `SHEET_ID` sai hoặc chưa chạy `setupSheet()`.
 3. Test thử việc gửi dữ liệu (không bắt buộc, nhưng nên làm để chắc chắn mọi thứ hoạt động trước khi lên website). Mở DevTools (F12) trên bất kỳ trang nào, vào tab **Console**, dán và Enter:
 
    ```js

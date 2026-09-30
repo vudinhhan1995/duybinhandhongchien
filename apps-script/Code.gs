@@ -72,8 +72,11 @@
  * - CÁCH LẤY ID: mở Google Sheets, URL có dạng
  *     https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit
  *   thì <SHEET_ID> là phần nằm giữa "/d/" và "/edit".
+ *
+ * - ID đã điền sẵn cho thiệp cưới Duy Bình & Hồng Chiên:
+ *     https://docs.google.com/spreadsheets/d/1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E/edit
  */
-var SHEET_ID = '';
+var SHEET_ID = '1WN6uaF4asheIiGjeyGXiD1-Ku-UTZNwLPVPWWZ8lj9E';
 
 /** Tên tab (sheet tab) sẽ ghi dữ liệu. Sẽ tự tạo nếu chưa có. */
 var SHEET_NAME = 'Lời chúc & Xác nhận';
