@@ -212,11 +212,10 @@ export const copy = {
  * ========================================================================== */
 
 export const rsvp = {
-  // Endpoint nhận POST JSON. Đọc từ biến môi trường Vite để không hardcode:
-  //   - copy `web/.env.example` thành `web/.env` rồi điền URL thật.
-  //   - Rỗng ('') nghĩa là chưa cấu hình: component nên fallback sang
-  //     gửi mailto/tel hoặc chỉ hiển thị thông báo cho người dùng.
-  endpoint: import.meta.env.VITE_RSVP_ENDPOINT || '',
+  // Endpoint nhận POST JSON. Đọc từ biến môi trường Vite hoặc dùng Web App mặc định:
+  endpoint:
+    import.meta.env.VITE_RSVP_ENDPOINT ||
+    'https://script.google.com/macros/s/AKfycbyznIhxeFlENedZOptEZB8cW5s_qjC-25uN0rKYPhGQrlGU8i0KoIrStiTh1oE2K22XQA/exec',
   fields: {
     // Input gốc: name="guest" (wi-z925obrg), placeholder "Tên của bạn là?", required
     guest: {
@@ -241,6 +240,14 @@ export const rsvp = {
       name: 'wish',
       label: 'Gửi lời chúc đến Dâu Rể nhé!',
       placeholder: 'Gửi lời chúc đến Dâu Rể nhé!',
+      required: false,
+      type: 'text',
+    },
+    // Input số người tham dự: name="attendees", placeholder "Số người tham dự"
+    attendees: {
+      name: 'attendees',
+      label: 'Số người tham dự',
+      placeholder: 'Số người tham dự',
       required: false,
       type: 'text',
     },

@@ -121,6 +121,23 @@ export default function RsvpSection({ onSuccess } = {}) {
                 </div>
               </div>
 
+              <div id="w-attendees" className="p-absolute">
+                <div className="input-css full-width full-height">
+                  <input
+                    id="wi-attendees"
+                    type="text"
+                    className="full-width full-height"
+                    name={rsvp.fields.attendees.name}
+                    placeholder={rsvp.fields.attendees.placeholder}
+                    value={form.attendees}
+                    onChange={(e) => set('attendees', e.target.value)}
+                    maxLength={RSVP_LIMITS.attendees}
+                    required={rsvp.fields.attendees.required}
+                    aria-label={rsvp.fields.attendees.label}
+                  />
+                </div>
+              </div>
+
               <div id="w-vx45iwpu" className="com-button p-absolute">
                 {/* Không dùng class "lazy" — xem chú thích ở MapSection.jsx. */}
                 <div className="button-css full-height full-width">
@@ -153,7 +170,7 @@ export default function RsvpSection({ onSuccess } = {}) {
                   aria-live="polite"
                   className="p-absolute"
                   style={{
-                    top: 297,
+                    top: 355,
                     left: 0,
                     width: '100%',
                     margin: 0,

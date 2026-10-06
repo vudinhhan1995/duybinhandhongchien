@@ -4,9 +4,9 @@ import { rsvp } from '../data/weddingData'
 /**
  * Giới hạn độ dài khớp với Apps Script gốc (validate phía server).
  */
-export const RSVP_LIMITS = { guest: 200, relation: 200, wish: 2000 }
+export const RSVP_LIMITS = { guest: 200, relation: 200, wish: 2000, attendees: 100 }
 
-const EMPTY_FORM = { guest: '', relation: '', wish: '', attending: '' }
+const EMPTY_FORM = { guest: '', relation: '', wish: '', attending: '', attendees: '' }
 
 /** Kiểm tra phía client trước khi gửi. Trả về chuỗi lỗi tiếng Việt hoặc `null`. */
 export function validateRsvp(values) {
@@ -18,6 +18,8 @@ export function validateRsvp(values) {
   if (values.wish.trim().length > RSVP_LIMITS.wish)
     return `Lời chúc không được vượt quá ${RSVP_LIMITS.wish} ký tự.`
   if (!values.attending) return 'Vui lòng chọn bạn có tham dự hay không.'
+  if (values.attendees && values.attendees.trim().length > RSVP_LIMITS.attendees)
+    return `Số người tham dự không được vượt quá ${RSVP_LIMITS.attendees} ký tự.`
   return null
 }
 
@@ -76,6 +78,7 @@ export function useRsvpSubmit({ onSuccess } = {}) {
         relation: form.relation.trim(),
         wish: form.wish.trim(),
         attending: form.attending,
+        attendees: form.attendees.trim(),
         source: window.location.href,
         device: navigator.userAgent.slice(0, 200),
       }

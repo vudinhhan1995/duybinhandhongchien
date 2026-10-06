@@ -777,17 +777,20 @@ b { font-weight: bold; }
 /* ----------------------------------------------------------------------
 -- KHU VỰC 9/13 · id section: #w-1nyt13tc · .com-section · mục đích: rsvp-form · 8 element con
 ---------------------------------------------------------------------- */
-#w-1nyt13tc{top:0px;left:0px;position:relative;width:420px;height:457px;}
+#w-1nyt13tc{top:0px;left:0px;position:relative;width:420px;height:517px;}
 #w-1nyt13tc .section-wrapper{opacity:1;}
 #w-1nyt13tc{margin-bottom: -1px;}
 #w-1nyt13tc .section-background{background:rgba(255,255,255,0.000);--type:0;}
-#w-rvcrbrxh{top:136.5px;left:22px;width:379px;height:290px;}
+#w-rvcrbrxh{top:136.5px;left:22px;width:379px;height:350px;}
 #w-rvcrbrxh form{-webkit-text-stroke:0px rgba(255, 255, 255, 1);border-radius:56px;color:rgba(0,0,0,0.400);font-size:13px;}
 #w-rvcrbrxh {}
 #w-rvcrbrxh input::placeholder, #w-rvcrbrxh .input-datetime-placeholder, #w-rvcrbrxh textarea::placeholder {
       color:rgba(0, 0, 0, 0.4);
     }
-#w-vx45iwpu{top:243px;left:0.5px;width:378px;height:47px;}
+#w-attendees{top:241px;left:0.5px;width:378px;height:47px;}
+#w-attendees .input-css{border-color:rgba(0, 0, 0, 1);border-radius:56px;border-style:double;border-width:1px;color:rgba(0,0,0,0.400);}
+#w-attendees input{background:rgba(255, 255, 255, 1);color:rgba(0,0,0,0.400);}
+#w-vx45iwpu{top:301px;left:0.5px;width:378px;height:47px;}
 #w-vx45iwpu .button-css{-webkit-text-stroke:0px rgba(255, 255, 255, 1);border-color:rgba(0, 0, 0, 1);border-radius:30px;border-style:double;border-width:4px;box-shadow:0px 4px 4px 0px rgba(0, 0, 0, 0.39);color:rgba(0, 0, 0, 1);font-size:16px;font-weight:bold;background:rgba(255, 255, 255, 1);--type:0;}
 #w-zuwe8zoz{top:59.5px;left:0.5px;width:378px;height:47px;}
 #w-zuwe8zoz .input-css{border-color:rgba(0, 0, 0, 1);border-radius:56px;border-style:double;border-width:1px;color:rgba(0,0,0,0.400);}

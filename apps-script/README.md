@@ -244,7 +244,7 @@ Có thể phân biệt: URL chứa đoạn `/dev` hoặc `/dev/` giữa chuỗi 
 
 ## Phần G — Cấu trúc bảng dữ liệu
 
-Mỗi lượt gửi form tạo thêm đúng 1 dòng trong tab `DUYBINH&HONGCHIEN`, với **5 cột** khớp đúng với file Sheets thật:
+Mỗi lượt gửi form tạo thêm đúng 1 dòng trong tab `DUYBINH&HONGCHIEN`, với **6 cột** khớp đúng với file Sheets thật:
 
 | Cột | Tiêu đề trong Sheets | Nội dung | Ví dụ |
 | --- | --- | --- | --- |
@@ -253,6 +253,7 @@ Mỗi lượt gửi form tạo thêm đúng 1 dòng trong tab `DUYBINH&HONGCHIEN
 | C | `BẠN LÀ GÌ CỦA DÂU RỂ NHỈ?` | Quan hệ khách tự khai (tối đa 200 ký tự, có thể để trống) | Bạn thân cô dâu |
 | D | `GỞI LỜI CHÚC ĐẾN DÂU RỂ NHÉ!` | Nội dung lời chúc (tối đa 2000 ký tự, có thể để trống) | Mừng hai bạn trăm năm hạnh phúc |
 | E | `BẠN CÓ THAM DỰ KHÔNG?` | Chỉ có 2 giá trị: `Có Thể Tham Dự` hoặc `Không Thể Tham Dự` | Có Thể Tham Dự |
+| F | `SỐ NGƯỜI THAM DỰ` | Số người đi cùng do khách nhập (tối đa 100 ký tự, có thể để trống) | 2 |
 
 > Cột D ghi `GỞI` (thiếu dấu huyền) là **cố ý** — giữ nguyên chính tả của file Sheets thật để khớp tuyệt đối. Đừng tự sửa thành `GỞI LỜI CHÚC`.
 

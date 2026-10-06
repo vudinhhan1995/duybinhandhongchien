@@ -93,19 +93,16 @@ var SHEET_NAME = 'DUYBINH&HONGCHIEN';
 /**
  * Hàng tiêu đề cột — thứ tự này phải khớp với thứ tự dữ liệu ghi xuống.
  *
- * ĐÃ ĐỐI CHIẾU VỚI FILE SHEETS THẬT (ID 1WN6uaF4...): file có sẵn 5 cột do
- * chủ thiệp tạo tay từ trước. Danh sách dưới đây bám theo ĐÚNG 5 cột đó,
- * kể cả chính tả lỗi "GỞI" (thiếu dấu huyền) — giữ nguyên để khớp tuyệt đối
- * với file đang có, tránh tạo thêm cột thừa làm bảng lệch.
- *
- * Cột F, G, H trong file là cột trống, không thuộc form → không ghi.
+ * ĐÃ ĐỐI CHIẾU VỚI FILE SHEETS THẬT (ID 1WN6uaF4...): file có 6 cột:
+ *   A THỜI GIAN | B TÊN | C QUAN HỆ | D GỞI LỜI CHÚC | E BẠN CÓ THAM DỰ KHÔNG? | F SỐ NGƯỜI THAM DỰ
  */
 var HEADER_ROW = [
   'THỜI GIAN',
   'TÊN CỦA BẠN LÀ?',
   'BẠN LÀ GÌ CỦA DÂU RỂ NHỈ?',
   'GỞI LỜI CHÚC ĐẾN DÂU RỂ NHÉ!',
-  'BẠN CÓ THAM DỰ KHÔNG?'
+  'BẠN CÓ THAM DỰ KHÔNG?',
+  'SỐ NGƯỜI THAM DỰ'
 ];
 
 /** Thời gian tối đa chờ giành LockService, tính bằng mili-giây (30 giây). */
@@ -119,6 +116,7 @@ var MAX_LEN = {
   guest: 200,      // tên khách mời
   relation: 200,   // quan hệ với dâu rể
   wish: 2000,      // lời chúc
+  attendees: 100,  // số người tham dự
   source: 500,     // URL trang
   device: 200      // user agent rút gọn
 };
@@ -179,6 +177,7 @@ function doPost(e) {
   var relation  = clean_(payload.relation, MAX_LEN.relation);
   var wish      = clean_(payload.wish, MAX_LEN.wish);
   var attending = normalizeAttending_(payload.attending);
+  var attendees = clean_(payload.attendees || payload.attendeeCount || payload.count || payload.so_nguoi, MAX_LEN.attendees);
   var source    = clean_(payload.source, MAX_LEN.source);
   var device    = clean_(payload.device, MAX_LEN.device);
 
@@ -225,8 +224,8 @@ function doPost(e) {
     var sheet = getSheet_();
     ensureHeader_(sheet);
 
-    // ĐÚNG 5 CỘT, khớp thứ tự HEADER_ROW và khớp file Sheets thật:
-    //   A THỜI GIAN | B TÊN | C QUAN HỆ | D LỜI CHÚC | E CÓ THAM DỰ KHÔNG
+    // ĐÚNG 6 CỘT, khớp thứ tự HEADER_ROW và khớp file Sheets thật:
+    //   A THỜI GIAN | B TÊN | C QUAN HỆ | D GỞI LỜI CHÚC | E BẠN CÓ THAM DỰ KHÔNG? | F SỐ NGƯỜI THAM DỰ
     // `source` và `device` vẫn được đọc từ payload (hữu ích khi cần điều tra
     // spam) nhưng KHÔNG ghi ra sheet — file đích không có 2 cột đó.
     var row = [
@@ -234,7 +233,8 @@ function doPost(e) {
       guest,
       relation,
       wish,
-      attending
+      attending,
+      attendees
     ];
 
     // appendRow tự ghi vào dòng trống kế tiếp, không cần biết lastRow.
@@ -536,15 +536,16 @@ function setupSheet() {
     .setBackground('#aa0000')
     .setFontColor('#ffffff');
 
-  // Độ rộng cột — đúng 5 cột, cột "GỞI LỜI CHÚC" rộng nhất.
-  var widths = [150, 200, 180, 380, 200];
+  // Độ rộng cột — đúng 6 cột, cột "GỞI LỜI CHÚC" rộng nhất.
+  var widths = [150, 200, 180, 380, 200, 180];
   for (var c = 0; c < lastCol; c++) {
     sheet.setColumnWidth(c + 1, widths[c] || 150);
   }
 
-  // Bọc chữ cho cột lời chúc và cột tên để không bị tràn khi xem trên Sheets.
+  // Bọc chữ cho cột lời chúc, tên và số người để không bị tràn khi xem trên Sheets.
   sheet.getRange(2, 2, Math.max(sheet.getMaxRows() - 1, 1), 1).setWrap(true);
   sheet.getRange(2, 4, Math.max(sheet.getMaxRows() - 1, 1), 1).setWrap(true);
+  sheet.getRange(2, 6, Math.max(sheet.getMaxRows() - 1, 1), 1).setWrap(true);
 
   // Khoá dòng 1 để cuộn xuống vẫn thấy tiêu đề.
   sheet.setFrozenRows(1);

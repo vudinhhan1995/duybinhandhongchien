@@ -35,7 +35,7 @@ import MusicToggle from './components/MusicToggle.jsx'
  *    5. EventDetailsSection    w-im3pxp9o  420×320  giờ · ngày dương/âm · địa điểm
  *    6. MapSection             w-j7s4utwr  420×353  iframe Google Maps + nút chỉ đường
  *    7. CalendarSection        w-xr8n7pvd  420×366  lịch tháng 11/2026, tim ngày 29
- *    8. RsvpSection            w-1nyt13tc  420×457  form xác nhận tham dự
+ *    8. RsvpSection            w-1nyt13tc  420×517  form xác nhận tham dự
  *    9. GiftSection            w-2lvco2h8  420×180  2 thẻ "Gửi Mừng Cưới"
  *   10. CouplePhotosSection    w-kzm77mp6  420×298  ảnh chú rể · ảnh cô dâu
  *   11. ThankYouSection       w-irpujf29  420×404  nền tối + "Thank You!"
